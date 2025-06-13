@@ -1,0 +1,30 @@
+### CRIAR usuário
+POST http://localhost:3010/users
+Content-Type: application/json
+
+{
+  "name": "João",
+  "email": "joao@email.com",
+  "senha": "###",
+  "cargo": "gerente"
+}
+
+### LISTAR todos
+GET http://localhost:3010/users
+
+### BUSCAR por ID
+GET http://localhost:3010/users/1
+
+### ATUALIZAR (PUT)
+PUT http://localhost:3010/users/1
+Content-Type: application/json
+
+{
+  "name": "Ana Silva",
+  "email": "ana@email.com",
+  "senha": "###",
+  "cargo": "gerente"
+}
+
+### DELETAR
+DELETE http://localhost:3010/users/1
