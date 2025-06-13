@@ -1,98 +1,81 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'font-awesome/css/font-awesome.min.css'; 
-import './App.css'; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
-import React, { useState, useEffect } from 'react'; // React e hooks useState/useEffect
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // Rotas React Router v6
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-// Importa componentes da aplicação
-import Logo from '../components/template/Logo';
-import Nav from '../components/template/Nav';
-import Footer from '../components/template/Footer';
-import Login from '../pages/Login';
-import Home from '../components/home/Home';
-import UserCrud from '../components/user/UserCrud';
+  const usuarioPadrao = {
+    email: "usuario@email.com",
+    senha: "123456"
+  };
 
-// Componente Layout: estrutura visual comum (logo, nav, footer)
-const Layout = ({ children }) => (
-  <div className="app">
-    <Logo />
-    <Nav />
-    <main>{children}</main> {/* Conteúdo dinâmico da página */}
-    <Footer />
-  </div>
-);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setErro('');
+    setLoading(true);
 
-// Componente PrivateRoute: protege rotas que só usuários autenticados podem acessar
-const PrivateRoute = ({ isAuthenticated, children }) => {
-  return isAuthenticated ? children : <Navigate to="/" replace />; 
-  // Se autenticado, renderiza o conteúdo. Senão, redireciona para login "/"
-};
-
-const App = () => {
-  // Estado para controlar se o usuário está autenticado
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Função que verifica no localStorage se o usuário está autenticado
-    const checkAuth = () => {
-      setIsAuthenticated(localStorage.getItem("auth") === "true");
-    };
-
-    checkAuth(); // Verifica no carregamento do componente
-
-    // Evento para atualizar autenticação se o localStorage mudar (ex: logout em outra aba)
-    window.addEventListener("storage", checkAuth);
-
-    // Limpa o event listener quando o componente desmontar
-    return () => window.removeEventListener("storage", checkAuth);
-  }, []);
+    setTimeout(() => {
+      setLoading(false);
+      if (email === usuarioPadrao.email && senha === usuarioPadrao.senha) {
+        localStorage.setItem("auth", "true");
+        navigate("/home");
+      } else {
+        setErro('Email ou senha incorretos.');
+      }
+    }, 1000);
+  };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rota pública de login */}
-        <Route 
-          path="/" 
-          element={
-            isAuthenticated 
-              ? <Navigate to="/home" replace /> // Se já autenticado, vai direto pra home
-              : <Login /> // Senão mostra a tela de login
-          } 
-        />
-
-        {/* Rota privada para home */}
-        <Route 
-          path="/home" 
-          element={
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <Layout>
-                <Home />
-              </Layout>
-            </PrivateRoute>
-          } 
-        />
-
-        {/* Rota privada para CRUD de usuários */}
-        <Route 
-          path="/users" 
-          element={
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <Layout>
-                <UserCrud />
-              </Layout>
-            </PrivateRoute>
-          } 
-        />
-
-        {/* Rota catch-all para redirecionar qualquer caminho inválido */}
-        <Route 
-          path="*" 
-          element={<Navigate to={isAuthenticated ? "/home" : "/"} replace />} 
-        />
-      </Routes>
-    </BrowserRouter>
+    <div className="login-container" role="main" aria-labelledby="login-title">
+      <div className="login-box">
+        <h2 id="login-title">Bem-vindo</h2>
+        <div className="logo" aria-label="Logo SEMJ TECH">
+          <img src="/logo.png" alt="Logo SEMJ TECH" />
+        </div>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="input-group">
+            <label htmlFor="email" className="sr-only">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              aria-describedby={erro ? "erro-login" : undefined}
+              disabled={loading}
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="senha" className="sr-only">Senha</label>
+            <input
+              id="senha"
+              type="password"
+              placeholder="Senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+              aria-describedby={erro ? "erro-login" : undefined}
+              disabled={loading}
+            />
+          </div>
+          {erro && (
+            <div id="erro-login" className="login-error" role="alert" aria-live="assertive">
+              {erro}
+            </div>
+          )}
+          <button type="submit" disabled={loading}>
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 
-export default App;
+export default Login;
