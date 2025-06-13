@@ -10,7 +10,7 @@ const headerProps = {
 }
 
 // Define a URL base da API
-const baseUrl = 'http://localhost:3001/users'
+const baseUrl = 'http://localhost:3010/users'
 
 const initialState = {
     user: { name: '', email: ''},
