@@ -1,6 +1,6 @@
 import express from 'express';
-import cors from 'cors';
-import { DatabasePostgres } from './databasePostgres.js';
+import cors from "cors"; // CORS para Express
+import { DatabasePostgres } from './dataBasePostgres.js';
 import './createTable.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -123,6 +123,7 @@ app.delete('/users/:id', async (req, res) => {
 });
 
 
-app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+// Inicia o servidor
+app.listen(process.env.PORT ?? 3010, () => {
+    console.log('Servidor rodando na porta 3010');
 });
