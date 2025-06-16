@@ -1,42 +1,69 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from '../pages/Login';
 import Home from '../components/home/Home';
 import UserCrud from '../components/user/UserCrud';
 
-// Componente para proteger rotas privadas
-function PrivateRoute({ children }) {
-  const isAuthenticated = localStorage.getItem("auth") === "true";
-  return isAuthenticated ? children : <Navigate to="/" replace />;
-}
+import Logo from '../components/template/Logo';
+import Nav from '../components/template/Nav';
+import Footer from '../components/template/Footer';
 
-export default function AppRoutes() {
+// Layout das páginas internas
+const Layout = ({ children }) => (
+  <div className="app">
+    <Logo />
+    <Nav />
+    {/* Aqui você pode colocar seu header/nav/footer */}
+    <main>{children}</main>
+    <Footer />
+  </div>
+);
+
+// Proteção de rota
+const PrivateRoute = ({ isAuthenticated, children }) => {
+  return isAuthenticated ? children : <Navigate to="/" replace />;
+};
+
+// Definição das rotas
+const AppRoutes = ({ isAuthenticated, setIsAuthenticated }) => {
   return (
     <Routes>
-      {/* Rota pública */}
-      <Route path="/" element={<Login />} />
+      <Route 
+        path="/" 
+        element={
+          isAuthenticated ? <Navigate to="/home" replace /> : <Login setIsAuthenticated={setIsAuthenticated} />
+        } 
+      />
 
-      {/* Rotas privadas */}
       <Route 
         path="/home" 
         element={
-          <PrivateRoute>
-            <Home />
-          </PrivateRoute>
-        } 
-      />
-      <Route 
-        path="/users" 
-        element={
-          <PrivateRoute>
-            <UserCrud />
+          <PrivateRoute isAuthenticated={isAuthenticated}>
+            <Layout>
+              <Home />
+            </Layout>
           </PrivateRoute>
         } 
       />
 
-      {/* Redireciona qualquer rota inválida para login */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route 
+        path="/users" 
+        element={
+          <PrivateRoute isAuthenticated={isAuthenticated}>
+            <Layout>
+              <UserCrud />
+            </Layout>
+          </PrivateRoute>
+        } 
+      />
+
+      <Route 
+        path="*" 
+        element={<Navigate to={isAuthenticated ? "/home" : "/"} replace />} 
+      />
     </Routes>
   );
-}
+};
+
+export default AppRoutes;

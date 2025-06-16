@@ -47,3 +47,68 @@
   font-size: 24px;
   font-weight: bold;
 }
+
+.box {
+  position: relative;
+  width: 250px;
+  height: 370px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  margin: 20px;
+  float: right;
+  box-shadow: 0 2px 5px rgb(0, 0, 0);
+  overflow: hidden; /* impede que o texto saia da caixa */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+.alerta-container {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 10px;
+  width: 220px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column; /* Organiza em coluna */
+  gap: 10px; /* Espaçamento entre os elementos */
+}
+
+.alerta-titulo {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.alerta-texto {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.botao{
+  border-radius: 10px;
+  background-color: #41b8d5;
+  color: #ffffff;
+  border: #ffffff;
+}
+
+.resumoManuten{
+  position: relative;
+  width: 250px;
+  height: 370px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  margin: 20px;
+  float: right;
+  box-shadow: 0 2px 5px rgb(0, 0, 0);
+  overflow: hidden; /* impede que o texto saia da caixa */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+}

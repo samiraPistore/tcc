@@ -27,7 +27,7 @@ const dashboardData = [
 ];
 
 const Home = () => (
-  <Main icon="home" title="DASHBOARD" subtitle="Manutenção preditiva">
+  <Main icon="home" title="DASHBOARD" subtitle="Manutenção Preditiva">
 
     <section className="dashboard-container" aria-label="Indicadores do sistema">
       {dashboardData.map(({ icon, iconLabel, number, description, iconClass }, index) => (
@@ -42,9 +42,28 @@ const Home = () => (
         </article>
       ))}
     </section>
+
+      <div class="alerta-container">
+        <h2 class="alerta-titulo">Alertas</h2>
+        <p class="alerta-texto">Falha detectada em Equipamento C</p>
+        <p class="alerta-texto">Anomalia detectada em Equipamento C</p>
+        <p class="alerta-texto">Falha detectada em Equipamento C</p>
+
+        <button className="botao">
+          Ver Mais
+        </button>
+      </div>
+
+      <div className="resumoManuten">
+        <h2 className="resumoManutenc"> Resumo Manutenções </h2>
+        <p className="manuten"> Manutenção A pendente </p>
+        <p className="manuten"> Manutenção A agendada </p>
+        <p className="manuten"> Manutenção A agendada </p>
+        <p className="manuten"> Manutenção A agendada </p>
+        <p className="manuten"> Manutenção A agendada </p>
+      </div>
+
   </Main>
 );
-
-
 
 export default Home;

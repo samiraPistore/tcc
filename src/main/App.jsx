@@ -1,81 +1,42 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
+// Importação dos estilos CSS do Bootstrap, Font Awesome e do seu CSS personalizado
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+import 'font-awesome/css/font-awesome.min.css';
+import './App.css'; // Verifique se esse arquivo existe e o caminho está correto
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
-  const usuarioPadrao = {
-    email: "usuario@email.com",
-    senha: "123456"
-  };
+// Importação dos componentes do layout e páginas
+import AppRoutes from './Routes'; // ou o caminho correto para o seu Route.jsx
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setErro('');
-    setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      if (email === usuarioPadrao.email && senha === usuarioPadrao.senha) {
-        localStorage.setItem("auth", "true");
-        navigate("/home");
-      } else {
-        setErro('Email ou senha incorretos.');
-      }
-    }, 1000);
-  };
+// Componente principal da aplicação que controla as rotas e autenticação
+const App = () => {
+  // Estado que armazena se o usuário está autenticado ou não
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // useEffect que verifica se o usuário está autenticado no localStorage quando o app carrega
+  useEffect(() => {
+    const checkAuth = () => {
+     setIsAuthenticated(false); // Força mostrar o login sempre
+    };
+    checkAuth(); // Verifica na primeira renderização
+
+    // Escuta mudanças no localStorage para atualizar autenticação em tempo real (ex: logout em outra aba)
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
+  }, []);
 
   return (
-    <div className="login-container" role="main" aria-labelledby="login-title">
-      <div className="login-box">
-        <h2 id="login-title">Bem-vindo</h2>
-        <div className="logo" aria-label="Logo SEMJ TECH">
-          <img src="/logo.png" alt="Logo SEMJ TECH" />
-        </div>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="input-group">
-            <label htmlFor="email" className="sr-only">Email</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              aria-describedby={erro ? "erro-login" : undefined}
-              disabled={loading}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="senha" className="sr-only">Senha</label>
-            <input
-              id="senha"
-              type="password"
-              placeholder="Senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-              aria-describedby={erro ? "erro-login" : undefined}
-              disabled={loading}
-            />
-          </div>
-          {erro && (
-            <div id="erro-login" className="login-error" role="alert" aria-live="assertive">
-              {erro}
-            </div>
-          )}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
-      </div>
-    </div>
+    // BrowserRouter envolve todas as rotas
+    <BrowserRouter>
+      <AppRoutes 
+          isAuthenticated={isAuthenticated} 
+          setIsAuthenticated={setIsAuthenticated} 
+        />
+    </BrowserRouter>
   );
 };
 
-export default Login;
+
+export default App;
