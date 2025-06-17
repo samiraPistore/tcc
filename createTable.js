@@ -19,7 +19,7 @@ await sql`
   )
 `;
 await sql`
-  CREATE TABLE equipamentos (
+  CREATE TABLE IF NOT EXISTS equipamentos (
     id UUID PRIMARY KEY,
     nome_equipamento TEXT NOT NULL,
     tipo TEXT NOT NULL,
@@ -28,7 +28,7 @@ await sql`
   );
 `
 await sql`
-CREATE TABLE sensores (
+CREATE TABLE IF NOT EXISTS sensores (
   id UUID PRIMARY KEY,
   equipamento_id UUID REFERENCES equipamentos(id),
   tipo TEXT NOT NULL, -- 'temperatura', 'vibracao', 'ruido'
@@ -61,16 +61,3 @@ await sql`
     resolvido BOOLEAN DEFAULT FALSE
   )
 `;
-
-
-await sql`
-  CREATE TABLE sensores_simulados (
-  id UUID PRIMARY KEY,
-  temperatura FLOAT,
-  vibracao FLOAT,
-  ruido FLOAT,
-  falha INT,
-  horario TIMESTAMP
-)
-`;
-
