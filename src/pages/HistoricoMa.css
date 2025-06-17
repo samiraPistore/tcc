@@ -1,0 +1,61 @@
+.maintenance-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+}
+
+.filters button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+.status {
+  font-weight: bold;
+  padding: 5px;
+  text-align: center;
+}
+
+.concluido {
+  background-color: #28a745;
+  color: white;
+}
+
+.em-andamento {
+  background-color: #ffc107;
+  color: black;
+}
+
+.pendente {
+  background-color: #dc3545;
+  color: white;
+}

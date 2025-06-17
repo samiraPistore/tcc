@@ -14,25 +14,49 @@ import AppRoutes from './Routes'; // ou o caminho correto para o seu Route.jsx
 const App = () => {
   // Estado que armazena se o usuário está autenticado ou não
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); // novo estado loading
+
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); //apaga o token
+    setIsAuthenticated(false); // Atualiza o estado para deslogar
+  };
 
   // useEffect que verifica se o usuário está autenticado no localStorage quando o app carrega
   useEffect(() => {
     const checkAuth = () => {
-     setIsAuthenticated(false); // Força mostrar o login sempre
-    };
+      const token = localStorage.getItem('authToken'); // verifica se tem token salvo
+        // Só autentica se token existir
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+
+    setLoading(false); // só depois de verificar
+  };
     checkAuth(); // Verifica na primeira renderização
+
+    
 
     // Escuta mudanças no localStorage para atualizar autenticação em tempo real (ex: logout em outra aba)
     window.addEventListener("storage", checkAuth);
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
+  
+  if (loading) {
+    // Aqui pode ser um loader, spinner, ou apenas null
+    return <div>Carregando...</div>;
+  }
+
   return (
     // BrowserRouter envolve todas as rotas
     <BrowserRouter>
       <AppRoutes 
-          isAuthenticated={isAuthenticated} 
-          setIsAuthenticated={setIsAuthenticated} 
+        isAuthenticated={isAuthenticated} 
+        setIsAuthenticated={setIsAuthenticated} 
+        handleLogout={handleLogout} // Passe a função aqui
         />
     </BrowserRouter>
   );

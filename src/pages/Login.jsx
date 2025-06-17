@@ -35,7 +35,7 @@ const Login = ({ setIsAuthenticated }) => {
 
       // Valida se email e senha batem com o usuário padrão
       if (email === usuarioPadrao.email && senha === usuarioPadrao.senha) {
-        localStorage.setItem("auth", "true"); // Marca como autenticado
+        localStorage.setItem("authToken", "true"); // Marca como autenticado
         setIsAuthenticated(true); // Atualiza o estado do App
         navigate("/home");                     // Redireciona para a página home
       } else {

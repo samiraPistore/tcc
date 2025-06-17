@@ -1,11 +1,11 @@
 .dashboard-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 10px;
   display: flex;
-  gap: 20px;
-  padding: 20px 0;
-  justify-content: center;
   flex-wrap: wrap;
-  background-color: #f7f8fa;
-  float: left;
+  justify-content: space-between;
 }
 
 .dashboard-card {
@@ -15,8 +15,12 @@
   padding: 15px;
   display: flex;
   align-items: center;
-  width: 250px;
+  width: auto;
   box-shadow: 0 2px 5px rgb(0, 0, 0);
+  min-width: 580px;
+  max-width: 100%;
+  flex-grow: 1; /* Faz os cartões ocuparem mais espaço */
+  
 }
 
 .dashboard-icon {
@@ -62,19 +66,14 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  display: flex;
-  flex-direction: column;
 }
 
 .alerta-container {
-  border: 1px solid black;
-  border-radius: 8px;
-  padding: 10px;
-  width: 220px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column; /* Organiza em coluna */
-  gap: 10px; /* Espaçamento entre os elementos */
+    width: 300px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .alerta-titulo {
@@ -97,8 +96,8 @@
 
 .resumoManuten{
   position: relative;
-  width: 250px;
-  height: 370px;
+  width: 350px;
+  height: 320px;
   background-color: #ffffff;
   border: 1px solid #000000;
   border-radius: 8px;
@@ -111,4 +110,6 @@
   justify-content: flex-start;
   display: flex;
   flex-direction: column;
+  padding: 20px;
+  top: 0px;
 }
