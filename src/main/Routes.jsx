@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from '../pages/Login';
 import Home from '../components/home/Home';
-import UserCrud from '../components/user/UserCrud';
 import AgendaManu from '../pages/AgendaManu';
 import AlertasNoti from '../pages/AlertasNoti';
 import Config from '../pages/Config';
@@ -56,16 +55,7 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated, handleLogout }) => {
         } 
       />
 
-      <Route 
-        path="/users" 
-        element={
-          <PrivateRoute isAuthenticated={isAuthenticated}>
-            <Layout handleLogout={handleLogout}>
-              <UserCrud />
-            </Layout>
-          </PrivateRoute>
-        } 
-      />
+  
 
       <Route 
         path="*" 

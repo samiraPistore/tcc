@@ -2,6 +2,7 @@ import React from 'react';
 import Main from '../template/Main';
 import './home.css';
 
+
 const dashboardData = [
   {
     icon: '✅',

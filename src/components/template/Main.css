@@ -1,4 +1,7 @@
 main > div{
     background-color: #FFF;
     box-shadow: 0px 0px 15px #0004;
+        width: 100%;       /* para ocupar a largura total */
+    height: 100%;      /* se quiser ocupar toda altura */
+
 }

@@ -8,16 +8,16 @@ const Nav = ({ handleLogout }) => (
             <Link to="/">
                 <i className="fa fa-home"></i> Início
             </Link>
-            <Link to="/ControleEq.jsx">
+            <Link to="/equipamentos">
                 <i className="fa fa-users"></i> Controle Equipamentos
             </Link>
-            <Link to="/HistoricoMa.jsx">
+            <Link to="/historico">
                 <i className="fa fa-users"></i> Histórico de Manutenção
             </Link>
-            <Link to="/RelatorioAn.jsx">
+           <Link to="/relatorios">
                 <i className="fa fa-users"></i> Relatórios e Análises
             </Link>
-            <Link to="/PrevisoesFal.jsx">
+            <Link to="/previsoes">
                 <i className="fa fa-users"></i> Previsões de Falha
             </Link>
             <Link to="/AgendaManu.jsx">
@@ -26,10 +26,10 @@ const Nav = ({ handleLogout }) => (
             <Link to="/AlertasNoti.jsx">
                 <i className="fa fa-users"></i> Alertas e Notificações
             </Link>
-            <Link to="/GestaoUsers.jsx">
+            <Link to="/gestao-usuarios">
                 <i className="fa fa-users"></i> Gestão de Usuários
             </Link>
-            <Link to="/config.jsx">
+            <Link to="/configuracoes">
                 <i className="fa fa-users"></i> Configurações do Sistema
             </Link>
 
