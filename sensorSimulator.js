@@ -1,36 +1,26 @@
-import sys
-import pandas as pd
-from joblib import load
-import json
+import { spawn } from 'child_process';
+import path from 'path';
 
-# 👇 Verifica se foi passado argumento via linha de comando
-try:
-    dados_json = sys.argv[1]
-    dados = json.loads(dados_json)
-except IndexError:
-    print("Nenhum dado recebido.")
-    exit(1)
-except json.JSONDecodeError as e:
-    print(f"Erro ao decodificar JSON: {e}")
-    exit(1)
+export function analisarSensor(dados) {
+  return new Promise((resolve, reject) => {
+    const scriptPath = path.join(__dirname, 'prevent', 'prevent.py');
 
-# 👇 Carrega o modelo treinado
-try:
-    modelo = load('modelo.pkl')
-except FileNotFoundError:
-    print("Arquivo modelo.pkl não encontrado.")
-    exit(1)
-except Exception as e:
-    print(f"Erro ao carregar o modelo: {e}")
-    exit(1)
+    const python = spawn('python', [scriptPath, JSON.stringify(dados)]);
 
-# 👇 Prepara os dados para predição
-entrada = pd.DataFrame([dados])
+    let resultado = '';
+    python.stdout.on('data', (data) => {
+      resultado += data.toString();
+    });
 
-# 👇 Faz a predição
-try:
-    resultado = modelo.predict(entrada)
-    print("FALHA" if resultado[0] == 1 else "OK")
-except Exception as e:
-    print(f"Erro durante predição: {e}")
-    exit(1)
+    python.stderr.on('data', (data) => {
+      console.error(`Erro Python: ${data}`);
+    });
+
+    python.on('close', (code) => {
+      if (code !== 0) {
+        return reject(new Error('Erro ao executar o script Python.'));
+      }
+      resolve(resultado.trim());
+    });
+  });
+}
