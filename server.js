@@ -6,7 +6,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-
 dotenv.config();
 
 
@@ -18,15 +17,9 @@ app.use(express.json());
 const database = new DatabasePostgres();
 
 
-
-
 // Cadastro
 app.post('/auth/register', async (req, res) => {
-  const { name, email, senha } = req.body;
-  if (!name || !email || !senha) {
-    return res.status(400).json({ msg: 'Preencha todos os campos!' });
-  }
-
+  const { name, email, senha, cargo } = req.body;
 
   const existingUser = await database.findByEmail(email);
   if (existingUser) {
@@ -35,55 +28,36 @@ app.post('/auth/register', async (req, res) => {
 
 
   const hashedSenha = await bcrypt.hash(senha, 10);
-  await database.create({ name, email, senha: hashedSenha });
+  await database.createUser({ name, email, senha: hashedSenha, cargo });
   res.status(201).json({ msg: 'Usuário criado!' });
 });
 
 
-
-
 // Login
 app.post('/auth/login', async (req, res) => {
-  const { email, senha } = req.body;
-  if (!email || !senha) {
-    return res.status(400).json({ msg: 'Preencha email e senha!' });
+  try {
+    const { email, senha } = req.body;
+    const user = await database.findByEmail(email);
+
+    if (!user) return res.status(400).json({ msg: 'Usuário não encontrado' });
+
+    const isSenhaValid = await bcrypt.compare(senha, user.senha);
+    if (!isSenhaValid) return res.status(401).json({ msg: 'Senha inválida!' });
+
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'minhaChaveSuperSecreta', { expiresIn: '1d' });
+
+    return res.json({ msg: 'Login realizado!', token, user: { id: user.id, name: user.name, email: user.email } });
+
+  } catch (err) {
+    console.error('Erro no login:', err);
+    return res.status(500).json({ msg: 'Erro interno no servidor' });
   }
-
-
-  const user = await database.findByEmail(email);
-  if (!user) {
-    return res.status(400).json({ msg: 'Usuário não encontrado!' });
-  }
-
-
-  const isSenhaValid = await bcrypt.compare(senha, user.senha);
-  if (!isSenhaValid) {
-    return res.status(401).json({ msg: 'Senha inválida!' });
-  }
-
-
-  const token = jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.JWT_SECRET || 'minhaChaveSuperSecreta',
-    { expiresIn: '1d' }
-  );
-
-
-  res.json({
-    msg: 'Login realizado!',
-    token,
-    user: { id: user.id, name: user.name, email: user.email }
-  });
 });
-
-
-
 
 // Rota protegida de teste
 app.get('/protected', (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ msg: 'Token não fornecido!' });
-
 
   const token = authHeader.split(' ')[1];
   try {
@@ -94,16 +68,12 @@ app.get('/protected', (req, res) => {
   }
 });
 
-
-
-
 // de Users
 app.get('/users', async (req, res) => {
   const users = await database.listUsers();
   const usersSemSenha = users.map(({ senha, ...rest }) => rest);
   res.json(usersSemSenha);
 });
-
 
 app.get('/users/:id', async (req, res) => {
   const user = await database.getUserById(req.params.id);
@@ -117,7 +87,7 @@ app.get('/users/:id', async (req, res) => {
 
 
 app.post('/users', async (req, res) => {
-  const { name, email, senha } = req.body;
+  const { name, email, senha, cargo } = req.body;
   if (!name || !email || !senha) {
     return res.status(400).json({ msg: 'Preencha todos os campos!' });
   }
@@ -129,26 +99,21 @@ app.post('/users', async (req, res) => {
   }
 
 
-  const hashedSenha = await bcrypt.hash(senha, 10);
-  await database.createUser({ name, email, senha: hashedSenha });
+  await database.createUser({ name, email, senha, cargo });
   res.status(201).json({ msg: 'Usuário criado com sucesso!' });
 });
 
-
 app.put('/users/:id', async (req, res) => {
-  const { name, email, senha } = req.body;
+  const { name, email, senha, cargo } = req.body;
   const user = {};
-
 
   if (name) user.name = name;
   if (email) user.email = email;
   if (senha) user.senha = await bcrypt.hash(senha, 10);
 
-
   await database.updateUser(req.params.id, user);
   res.status(204).send();
 });
-
 
 app.delete('/users/:id', async (req, res) => {
   await database.deleteUser(req.params.id);
@@ -156,12 +121,10 @@ app.delete('/users/:id', async (req, res) => {
 });
 
 
-
-
 // Equipamentos
 app.post('/equipamentos', async (req, res) => {
-  const { nome, modelo, localizacao, status } = req.body;
-  await database.createEquipamento({ nome, modelo, localizacao, status });
+  const {  nome_equipamento, tipo, local, estado_atual} = req.body;
+  await database.createEquipamento({ nome_equipamento, tipo, local, estado_atual });
   res.status(201).send();
 });
 
@@ -171,25 +134,20 @@ app.get('/equipamentos', async (req, res) => {
   res.json(equipamentos);
 });
 
-
 app.get('/equipamentos/:id', async (req, res) => {
   const equipamento = await database.getEquipamentoById(req.params.id);
   res.json(equipamento);
 });
-
 
 app.put('/equipamentos/:id', async (req, res) => {
   await database.updateEquipamento(req.params.id, req.body);
   res.status(204).send();
 });
 
-
 app.delete('/equipamentos/:id', async (req, res) => {
   await database.deleteEquipamento(req.params.id);
   res.status(204).send();
 });
-
-
 
 
 // Sensores
@@ -204,7 +162,6 @@ app.get('/sensores', async (req, res) => {
   const sensores = await database.listSensores();
   res.json(sensores);
 });
-
 
 app.get('/sensores/:id', async (req, res) => {
   const sensor = await database.getSensorById(req.params.id);
@@ -224,8 +181,6 @@ app.delete('/sensores/:id', async (req, res) => {
 });
 
 
-
-
 // Leituras de Sensores
 app.post('/leituras', async (req, res) => {
   const { sensor_id, valor, timestamp } = req.body;
@@ -239,8 +194,6 @@ app.get('/leituras', async (req, res) => {
   const leituras = await database.listLeiturasBySensor(sensorId);
   res.json(leituras);
 });
-
-
 
 
 // Manutenções
@@ -274,20 +227,16 @@ app.delete('/manutencoes/:id', async (req, res) => {
 });
 
 
-
-
 // Ordens de Serviço
 app.post('/os', async (req, res) => {
   await database.createOS(req.body);
   res.status(201).send();
 });
 
-
 app.get('/os', async (req, res) => {
   const ordens = await database.listOS();
   res.json(ordens);
 });
-
 
 app.get('/os/:id', async (req, res) => {
   const ordem = await database.getOSById(req.params.id);
@@ -307,8 +256,6 @@ app.delete('/os/:id', async (req, res) => {
 });
 
 
-
-
 // Alertas
 app.get('/alertas', async (req, res) => {
   const alertas = await database.listAlertas();
@@ -321,13 +268,10 @@ app.post('/alertas', async (req, res) => {
   res.status(201).send();
 });
 
-
 app.delete('/alertas/:id', async (req, res) => {
   await database.deleteAlerta(req.params.id);
   res.status(204).send();
 });
-
-
 
 
 // Relatórios
@@ -343,20 +287,15 @@ app.post('/relatorios', async (req, res) => {
 });
 
 
-
-
-// Start do servidor
-app.listen(process.env.PORT ?? 3010, () => {
-  console.log('Servidor rodando na porta 3010');
-});
-
 // Agendamentos
 app.post('/agendamentos', async (req, res) => {
   const { equipamento_id, data_agendada, tipo, responsavel, observacoes } = req.body;
 
+
   if (!equipamento_id || !data_agendada || !tipo || !responsavel) {
     return res.status(400).json({ msg: 'Preencha todos os campos obrigatórios!' });
   }
+
 
   try {
     await database.createAgendamento({ equipamento_id, data_agendada, tipo, responsavel, observacoes });
@@ -367,6 +306,7 @@ app.post('/agendamentos', async (req, res) => {
   }
 });
 
+
 app.get('/agendamentos', async (req, res) => {
   try {
     const agendamentos = await database.listAgendamentos();
@@ -376,3 +316,11 @@ app.get('/agendamentos', async (req, res) => {
     res.status(500).json({ msg: 'Erro interno ao buscar agendamentos.' });
   }
 });
+
+
+// Start do servidor
+app.listen(process.env.PORT ?? 3010, () => {
+  console.log('Servidor rodando na porta 3010');
+});
+
+

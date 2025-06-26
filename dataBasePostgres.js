@@ -13,6 +13,11 @@ export class DatabasePostgres {
     }
   }
 
+  async findByEmail(email) {
+    const result = await sql`SELECT * FROM users WHERE email = ${email}`;
+    return result[0];
+  }
+
   async getUserById(id) {
     const result = await sql`SELECT * FROM users WHERE id = ${id}`;
     return result[0];

@@ -3,28 +3,25 @@ POST http://localhost:3010/users
 Content-Type: application/json
 
 {
-  "name": "João",
-  "email": "joao@email.com",
-  "senha": "###",
+  "name": "user",
+  "email": "usuario@email.com",
+  "senha": "12345",
   "cargo": "gerente"
 }
 
 ### LISTAR todos
 GET http://localhost:3010/users
 
-### BUSCAR por ID
-GET http://localhost:3010/users/1
-
 ### ATUALIZAR (PUT)
-PUT http://localhost:3010/users/1
+PUT http://localhost:3010/users/8ad8c68a-7e92-4a3b-9018-8287366586a7
 Content-Type: application/json
 
 {
   "name": "Ana Silva",
   "email": "ana@email.com",
   "senha": "###",
-  "cargo": "gerente"
+  "cargo": "supervisor"
 }
 
 ### DELETAR
-DELETE http://localhost:3010/users/1
+DELETE http://localhost:3010/users/94d860d4-ccbe-48c2-b230-6ffc798a6536

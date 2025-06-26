@@ -1,5 +1,6 @@
 import { sql } from './sql.js';
 
+
 await sql`
   CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY,
@@ -8,16 +9,9 @@ await sql`
     senha TEXT NOT NULL,
     cargo TEXT NOT NULL
   )
-`;
+`
 
 
-await sql`
-  CREATE TABLE IF NOT EXISTS permissoes (
-    id UUID PRIMARY KEY,
-    nome TEXT NOT NULL UNIQUE,
-    descricao TEXT
-  )
-`;
 await sql`
   CREATE TABLE IF NOT EXISTS equipamentos (
     id UUID PRIMARY KEY,
@@ -28,15 +22,29 @@ await sql`
   );
 `
 await sql`
-CREATE TABLE IF NOT EXISTS sensores (
-  id UUID PRIMARY KEY,
-  equipamento_id UUID REFERENCES equipamentos(id),
-  tipo TEXT NOT NULL, -- 'temperatura', 'vibracao', 'ruido'
-  valor DECIMAL NOT NULL,
-  horario TIMESTAMP NOT NULL
-);
+  CREATE TABLE IF NOT EXISTS sensores (
+    id UUID PRIMARY KEY,
+    equipamento_id UUID REFERENCES equipamentos(id),
+    nome TEXT NOT NULL,
+    tipo TEXT NOT NULL
+  );
+
+
 `
 
+
+
+
+await sql`
+  CREATE TABLE IF NOT EXISTS leituras (
+    id UUID PRIMARY KEY,
+    sensor_id UUID NOT NULL REFERENCES sensores(id),
+    valor DECIMAL NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+
+`
 
 
 await sql`
@@ -50,6 +58,8 @@ await sql`
 `;
 
 
+
+
 await sql`
   CREATE TABLE IF NOT EXISTS alertas (
     id UUID PRIMARY KEY,
@@ -61,3 +71,35 @@ await sql`
     resolvido BOOLEAN DEFAULT FALSE
   )
 `;
+
+
+
+
+await sql`
+  CREATE TABLE IF NOT EXISTS OS (
+    id UUID PRIMARY KEY,
+    equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
+    descricao TEXT NOT NULL,
+    status TEXT NOT NULL,
+    data_abertura DATE NOT NULL,
+    data_fechamento DATE
+  );
+`
+await sql`
+  CREATE TABLE IF NOT EXISTS relatorios (
+    id UUID PRIMARY KEY,
+    titulo TEXT NOT NULL,
+    conteudo TEXT NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`
+await sql`
+  CREATE TABLE IF NOT EXISTS agendamentos (
+    id UUID PRIMARY KEY,
+    equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
+    data_agendada DATE NOT NULL,
+    tipo TEXT NOT NULL, -- preventiva, corretiva, inspeção...
+    responsavel TEXT,
+    observacoes TEXT
+  );
+`
