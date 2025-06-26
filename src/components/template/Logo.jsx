@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const Logo = () => (
     <aside className='logo'>
-        <Link to="/" className='logo'>
+        <Link to="/" >
         <img src={logo} alt="logo" />
         </Link>
     </aside>

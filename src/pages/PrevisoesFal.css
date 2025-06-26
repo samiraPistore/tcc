@@ -1,0 +1,20 @@
+.grafico-tendencia-placeholder {
+  background-color: #fff;
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+.alerta-urgente {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background-color: #dc3545;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+}
+

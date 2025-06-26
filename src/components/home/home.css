@@ -1,26 +1,23 @@
 .dashboard-container {
-  width: 100%;
-  max-width: none;
-  margin: 0;
+  width: 1630px;
+  margin: 0 ;
   padding: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 20px;
 }
 
 .dashboard-card {
   background-color: #fff;
-  border: 1px solid #000000;
+  border: 1px solid #000;
   border-radius: 12px;
   padding: 15px;
   display: flex;
   align-items: center;
-  width: auto;
+  flex: 1 1 300px;
   box-shadow: 0 2px 5px rgb(0, 0, 0);
-  min-width: 580px;
   max-width: 100%;
-  flex-grow: 1; /* Faz os cartões ocuparem mais espaço */
-  
 }
 
 .dashboard-icon {
@@ -52,28 +49,34 @@
   font-weight: bold;
 }
 
-.box {
+.box,
+.resumoManuten {
   position: relative;
-  width: 250px;
-  height: 370px;
   background-color: #ffffff;
-  border: 1px solid #000000;
+  border: 1px solid #000;
   border-radius: 8px;
   margin: 20px;
-  float: right;
   box-shadow: 0 2px 5px rgb(0, 0, 0);
-  overflow: hidden; /* impede que o texto saia da caixa */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding: 20px;
+  width: 250px;
+  height: 370px;
+}
+
+.resumoManuten {
+  width: 350px;
+  height: 320px;
 }
 
 .alerta-container {
-    width: 300px;
-    padding: 10px;
-    background-color: #f8f8f8;
-    border: 1px solid #ddd;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .alerta-titulo {
@@ -87,29 +90,30 @@
   font-size: 0.9rem;
 }
 
-.botao{
+.botao {
   border-radius: 10px;
   background-color: #41b8d5;
-  color: #ffffff;
-  border: #ffffff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: background-color 0.3s;
 }
 
-.resumoManuten{
-  position: relative;
-  width: 350px;
-  height: 320px;
-  background-color: #ffffff;
-  border: 1px solid #000000;
-  border-radius: 8px;
-  margin: 20px;
-  float: right;
-  box-shadow: 0 2px 5px rgb(0, 0, 0);
-  overflow: hidden; /* impede que o texto saia da caixa */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  top: 0px;
+.botao:hover {
+  background-color: #339ab5;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-card,
+  .box,
+  .resumoManuten {
+    width: 100%;
+    min-width: unset;
+  }
 }

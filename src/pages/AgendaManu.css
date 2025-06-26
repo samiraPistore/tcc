@@ -1,0 +1,118 @@
+/* Container principal que organiza calendário + formulário lado a lado */
+.agenda-container {
+  display: flex;                        
+  gap: 30px;                           
+  padding: 30px;                     
+  align-items: flex-start;               
+  font-family: 'Segoe UI', sans-serif;   
+  background-color: #f4f6f8;         
+  border-radius: 10px;                   
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  width: 1680px;                   
+}
+
+/* Calendário principal do react-calendar */
+.react-calendar {
+  width: 100%;                           
+  background: white;                 
+  border: none;                           
+  border-radius: 12px;                    
+  font-family: 'Segoe UI', sans-serif;    
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+  padding: 10px;                         
+}
+
+/* Barra de navegação do calendário (setas, mês) */
+.react-calendar__navigation {
+  display: flex;                          /* Coloca os botões em linha */
+  justify-content: space-between;        /* Distribui espaço entre eles */
+  margin-bottom: 10px;                  
+}
+
+/* Estilo geral dos dias (tiles) do calendário */
+.react-calendar__tile {
+  padding: 12px 0;                      
+  text-align: center;                 
+  background: none;                    
+  border-radius: 6px;                   
+  transition: 0.2s ease;                 
+}
+
+/* Dia selecionado */
+.react-calendar__tile--active {
+  background: #0f82ff;                
+  color: white;                          
+}
+
+/* Dia atual */
+.react-calendar__tile--now {
+  background: #e0f3ff;                    
+  font-weight: bold;        
+}              
+
+/* Bloco onde o calendário fica */
+.calendario {
+  flex: 1;                            
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Bloco onde o formulário fica */
+.formulario {
+  flex: 2;                               
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Estilo dos labels (títulos dos campos) */
+.formulario label {
+  display: block;                       
+  margin-bottom: 15px;                   
+  font-weight: 500;                   
+  color: #333;                       
+}
+
+/* Inputs, selects e textarea */
+.formulario input[type="text"],
+.formulario input[type="time"],
+.formulario select,
+.formulario textarea {
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;              
+}
+
+/* Caixa de texto com redimensionamento vertical */
+.formulario textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Checkbox alinhado com texto */
+.formulario input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* Botão de envio */
+button[type="submit"] {
+  background-color: #0f82ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Efeito ao passar o mouse no botão */
+button[type="submit"]:hover {
+  background-color: #0c6fd1;
+}

@@ -10,21 +10,20 @@ export const AuthProvider = ({ children }) => {
 
 //ele indica se você já tem login ou se precisa logar se tiver ele considera usuário logado
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) setAuthenticated(true);
-    }, []);
+    const token = localStorage.getItem('authToken');
+    if (token) setAuthenticated(true);
+}, []);
 
-//usuário logado 
-    const login = (token) => {
-        localStorage.setItem('token', token);
-        setAuthenticated(true);
-    };
+const login = (token) => {
+    localStorage.setItem('authToken', token);
+    setAuthenticated(true);
+};
 
-//usuário deslogado
-    const logout = () => {
-        localStorage.removeItem('token');
-        setAuthenticated(false);
-    };
+const logout = () => {
+    localStorage.removeItem('authToken');
+    setAuthenticated(false);
+};
+
 
 //Retorna o contexto configurado, com os valores disponíveis
     return (

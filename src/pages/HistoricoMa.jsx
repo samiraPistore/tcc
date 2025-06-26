@@ -9,11 +9,11 @@ const MaintenanceScreen = () => {
       {/* Filtros */}
       <div className="filters">
         <label>
-          Data
+          {/*Data*/}
           <input type="date" />
         </label>
         <label>
-          Tipo
+          {/*Tipo*/}
           <select>
             <option>Preventiva</option>
             <option>Corretiva</option>
@@ -21,7 +21,7 @@ const MaintenanceScreen = () => {
           </select>
         </label>
         <label>
-          Equipamento
+          {/*Equipamento*/}
           <select>
             <option>Todos</option>
             <option>Motor Elétrico</option>

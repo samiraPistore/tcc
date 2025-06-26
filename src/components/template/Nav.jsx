@@ -20,10 +20,10 @@ const Nav = ({ handleLogout }) => (
             <Link to="/previsoes">
                 <i className="fa fa-users"></i> Previsões de Falha
             </Link>
-            <Link to="/AgendaManu.jsx">
+            <Link to="/agenda-manutencao">
                 <i className="fa fa-users"></i> Agendamento de Manutenção
             </Link>
-            <Link to="/AlertasNoti.jsx">
+            <Link to="/alertas">
                 <i className="fa fa-users"></i> Alertas e Notificações
             </Link>
             <Link to="/gestao-usuarios">

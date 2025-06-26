@@ -1,47 +1,82 @@
 .maintenance-container {
-  max-width: 900px;
+  width:  1680px;
   margin: auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+  margin: 0 ;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  font-weight: bold;
 }
 
 .filters {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filters input[type="date"],
+.filters select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 160px;
+  background-color: #fff;
+  font-weight: bold;
 }
 
 .filters label {
   display: flex;
   flex-direction: column;
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
 }
 
 .filters button {
-  padding: 8px 15px;
+  padding: 10px 18px;
   background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+
+  transition: background-color 0.3s ease;
+  margin-top: auto;
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
 }
 
 th, td {
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 14px 16px;
   text-align: left;
 }
 
 th {
-  background-color: #f4f4f4;
+  background-color: #0077ff;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .status {
   font-weight: bold;
-  padding: 5px;
+  padding: 6px 12px;
   text-align: center;
 }
 
@@ -56,6 +91,6 @@ th {
 }
 
 .pendente {
-  background-color: #dc3545;
+  background-color: #575757;
   color: white;
 }
