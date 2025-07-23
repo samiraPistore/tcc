@@ -9,28 +9,25 @@ const Nav = ({ handleLogout }) => (
                 <i className="fa fa-home"></i> Início
             </Link>
             <Link to="/equipamentos">
-                <i className="fa fa-users"></i> Controle Equipamentos
+                <i className="fa fa-gamepad"></i> Controle Equipamentos
             </Link>
             <Link to="/historico">
-                <i className="fa fa-users"></i> Histórico de Manutenção
+                <i className="fa fa-history"></i> Histórico de Manutenção
             </Link>
            <Link to="/relatorios">
-                <i className="fa fa-users"></i> Relatórios e Análises
+                <i className="fa fa-bar-chart"></i> Relatórios e Análises
             </Link>
             <Link to="/previsoes">
-                <i className="fa fa-users"></i> Previsões de Falha
+                <i className="fa fa-line-chart"></i> Previsões de Falha
             </Link>
             <Link to="/agenda-manutencao">
-                <i className="fa fa-users"></i> Agendamento de Manutenção
+                <i className="fa fa-calendar-check-o"></i> Agendamento de Manutenção
             </Link>
             <Link to="/alertas">
-                <i className="fa fa-users"></i> Alertas e Notificações
-            </Link>
-            <Link to="/gestao-usuarios">
-                <i className="fa fa-users"></i> Gestão de Usuários
+                <i className="fa fa-bell"></i> Alertas e Notificações
             </Link>
             <Link to="/configuracoes">
-                <i className="fa fa-users"></i> Configurações do Sistema
+                <i className="fa fa-sliders"></i> Configurações do Sistema
             </Link>
 
             <button onClick={handleLogout}>Sair</button>

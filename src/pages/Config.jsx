@@ -1,73 +1,85 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './Config.css';
 import { useNavigate } from 'react-router-dom';
+import Main from '../components/template/Main';
 
 function Config() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
+  // Estados para notificações
+  const [emailNotif, setEmailNotif] = useState(true);
+  const [smsNotif, setSmsNotif] = useState(false);
+  const [pushNotif, setPushNotif] = useState(true);
 
-    // Estados para notificações
-    const [emailNotif, setEmailNotif] = useState(true);
-    const [smsNotif, setSmsNotif] = useState(false);
-    const [pushNotif, setPushNotif] = useState(true);
-
-
-    const irParaGestaoUsuarios = () => {
-        navigate('/gestao-usuarios');
-    };
-    /*
-    const irParaIntegraçoes = () => {
-        navigate('/')
-    }*/
+  const irParaGestaoUsuarios = () => {
+    navigate('/gestao-usuarios');
+  };
 
   return (
-    <div className="config-container">
-      <h2 className="config-title"> Configurações do Sistema</h2>
+    <Main
+      icon="cogs" 
+      title="Configurações"
+      subtitle="Configurações do Sistema"
+    >
+      <div className="config-container">
       
-      {/* Usuários e Permissões */}
+
+        {/* Usuários e Permissões */}
         <div className="config-section"></div>
-        <h3>Usuarios e Permissões</h3>
-        <button onClick={irParaGestaoUsuarios}>Gestão Usuarios</button>
+        <h3>Usuários e Permissões</h3>
+        <button onClick={irParaGestaoUsuarios}>Gestão Usuários</button>
 
-      {/* Notificações */}
-        <div className="switch-row"></div>
+        {/* Notificações */}
         <h3>Notificações</h3>
-        <label className="switch">
-             <span>Notificação por E-mail</span>
-            <input type="checkbox" checked={emailNotif} onChange={() => setEmailNotif(!emailNotif)}
-             />
-        </label>
-        <label className="switch">
-        <span>Notificação por SMS</span>
-            <input type="checkbox" checked={smsNotif} onChange={() => setSmsNotif(!smsNotif)}
-             />
-        </label>
-        <label className="switch">
-        <span>Notificação Push</span>
-            <input type="checkbox" checked={pushNotif} onChange={() => setPushNotif(!pushNotif)}
-             />
-            <span className="slider round"></span>
-        </label>
-        
+        <div className="switch-row">
+          <div className="switch">
+            <span>Notificação por E-mail</span>
+            <input
+              type="checkbox"
+              checked={emailNotif}
+              onChange={() => setEmailNotif(!emailNotif)}
+            />
+          </div>
 
+          <div className="switch">
+            <span>Notificação por SMS</span>
+            <input
+              type="checkbox"
+              checked={smsNotif}
+              onChange={() => setSmsNotif(!smsNotif)}
+            />
+          </div>
 
-   
-      {/* Integrações */}
+          <div className="switch">
+            <span>Notificação Push</span>
+            <div className="switch-btn">
+              <input
+                type="checkbox"
+                checked={pushNotif}
+                onChange={() => setPushNotif(!pushNotif)}
+              />
+              <span className="slider round"></span>
+            </div>
+          </div>
+        </div>
+
+        {/* Integrações */}
         <div className="config-section"></div>
         <h3>Integrações do Sistema</h3>
         <button onClick={irParaGestaoUsuarios}>Integrações do Sistema</button>
-        
-      {/* Análise Preditiva */}
+
+        {/* Análise Preditiva */}
         <div className="config-section"></div>
-        <h3>Analise preditiva</h3>
-        
-      {/* Segurança */}
+        <h3>Análise preditiva</h3>
+
+        {/* Segurança */}
         <div className="config-section"></div>
         <h3>Segurança</h3>
 
-      <button className="btn-salvar">Salvar Alterações</button>
-    </div>
+        <button className="btn-salvar">Salvar Alterações</button>
+      </div>
+    </Main>
   );
-};
+}
 
 export default Config;

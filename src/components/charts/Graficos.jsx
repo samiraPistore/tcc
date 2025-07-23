@@ -1,55 +1,35 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import React, { useEffect, useState } from 'react';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
-// Registro dos elementos necessários do Chart.js
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Grafico = ({ labels, valores, titulo = 'Gráfico', legenda = 'Dados' }) => {
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: legenda,
-        data: valores,
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        tension: 0.3,
-        fill: true,
-      },
-    ],
-  };
+export default function GraficoAnalise() {
+  const [dados, setDados] = useState({ falha: 0, normal: 0 });
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' },
-      title: { display: true, text: titulo },
-    },
+
+  useEffect(() => {
+  fetch('http://localhost:3010/analise/resumo/geral')
+    .then(res => res.json())
+    .then(data => setDados(data))
+    .catch(err => console.error("Erro ao carregar dados do gráfico", err));
+}, []);
+
+  const chartData = {
+    labels: ['Funcionando Normalmente', 'Falhas Detectadas'],
+    datasets: [{
+      label: 'Quantidade de Equipamentos',
+      data: [dados.normal, dados.falha],
+      backgroundColor: ['#4CAF50', '#F44336'],
+      borderColor: ['#388E3C', '#D32F2F'],
+      borderWidth: 1
+    }]
   };
 
   return (
-    <div style={{ width: '700px', margin: '0 auto' }}>
-      <Line data={data} options={options} />
+    <div style={{ width: '400px', margin: 'auto' }}>
+      <h3 style={{ textAlign: 'center' }}>Análise de Equipamentos</h3>
+      <Pie data={chartData} />
     </div>
   );
-};
-
-export default Grafico;
+}

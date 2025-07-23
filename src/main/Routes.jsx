@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+
 import Login from '../pages/Login';
 import Home from '../components/home/Home';
 import AgendaManu from '../pages/AgendaManu';
@@ -13,9 +14,12 @@ import PrevisoesFal from '../pages/PrevisoesFal';
 import RelatorioAn from '../pages/RelatorioAn';
 
 
+
+
 import Logo from '../components/template/Logo';
 import Nav from '../components/template/Nav';
 import Footer from '../components/template/Footer';
+
 
 // Layout das páginas internas
 const Layout = ({ children, handleLogout }) => (
@@ -28,126 +32,139 @@ const Layout = ({ children, handleLogout }) => (
   </div>
 );
 
+
 // Proteção de rota
 const PrivateRoute = ({ isAuthenticated, children }) => {
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
+
 // Definição das rotas
 const AppRoutes = ({ isAuthenticated, setIsAuthenticated, handleLogout }) => {
   return (
     <Routes>
-      <Route 
-        path="/" 
+      <Route
+        path="/"
         element={
           isAuthenticated ? <Navigate to="/home" replace /> : <Login setIsAuthenticated={setIsAuthenticated} />
-        } 
+        }
       />
 
-      <Route 
-        path="/home" 
+
+      <Route
+        path="/home"
         element={
           <PrivateRoute isAuthenticated={isAuthenticated}>
             <Layout handleLogout={handleLogout}>
               <Home />
             </Layout>
           </PrivateRoute>
-        } 
+        }
       />
 
-  
 
-      <Route 
-        path="*" 
-        element={<Navigate to={isAuthenticated ? "/home" : "/"} replace />} 
+ 
+
+
+      <Route
+        path="*"
+        element={<Navigate to={isAuthenticated ? "/home" : "/"} replace />}
       />
-      <Route 
-  path="/agenda-manutencao" 
+      <Route
+  path="/agenda-manutencao"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <AgendaManu />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/alertas" 
+
+<Route
+  path="/alertas"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <AlertasNoti />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/configuracoes" 
+
+<Route
+  path="/configuracoes"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <Config />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/equipamentos" 
+
+<Route
+  path="/equipamentos"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <ControleEq />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/gestao-usuarios" 
+
+<Route
+  path="/gestao-usuarios"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <GestaoUsers />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/historico" 
+
+<Route
+  path="/historico"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <HistoricoMa />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/previsoes" 
+
+<Route
+  path="/previsoes"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <PrevisoesFal />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
 
-<Route 
-  path="/relatorios" 
+
+<Route
+  path="/relatorios"
   element={
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <RelatorioAn />
       </Layout>
     </PrivateRoute>
-  } 
+  }
 />
+
 
     </Routes>
   );
@@ -156,4 +173,10 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated, handleLogout }) => {
 
 
 
+
+
+
+
 export default AppRoutes;
+
+

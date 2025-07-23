@@ -87,6 +87,10 @@ footer.footer{
 
 
 @media(max-width: 576px){
+  .header {
+    font-size: 1.2rem;
+  }
+
     .app{
         grid-template-rows:
             var(--logo-height)

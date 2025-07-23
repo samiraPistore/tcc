@@ -1,27 +1,28 @@
+
+
 /* Container geral da tela */
 .config-container {
-  width: 1700px;
-  margin: 0 auto;
-  padding: 32px;
+  width: 90vw;
+  padding: 20px;
   background-color: #f9f9f9;
-  border-radius: 12px;
+  border-radius: 8px;
   font-family: Arial, sans-serif;
 }
 
 /* Título principal */
 .config-title {
-  font-size: 28px;
+  font-size: 26px;
+  font-weight: bold;
   margin-bottom: 24px;
   text-align: center;
+  color: #222;
 }
 
 /* Seções */
 .config-section {
-  margin-bottom: 32px;
-  padding: 16px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ccc;
 }
 
 /* Botão padrão */
@@ -39,14 +40,21 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Switch personalizado */
+/* Switches */
+.switch-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 12px;
+}
+
 .switch {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
 }
 
+/* Switch personalizado */
 .switch input[type="checkbox"] {
   position: relative;
   width: 48px;
@@ -90,5 +98,29 @@ button:hover {
 }
 
 .btn-salvar:hover {
-  background-color: #007bff;
+  background-color: #0056b3;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .switch {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .config-container {
+    padding: 16px;
+  }
+
+  button, .btn-salvar {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .config-title {
+    font-size: 20px;
+  }
 }

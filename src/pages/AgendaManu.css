@@ -1,32 +1,43 @@
 /* Container principal que organiza calendário + formulário lado a lado */
 .agenda-container {
   display: flex;                        
-  gap: 30px;                           
-  padding: 30px;                     
+  gap: 30px;                                              
   align-items: flex-start;               
   font-family: 'Segoe UI', sans-serif;   
-  background-color: #f4f6f8;         
+  background-color: #ffffff;         
   border-radius: 10px;                   
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  width: 1680px;                   
+  width: 90vw;              
+  padding: 100px 32px 32px 32px; /* topo maior pra não sobrepor header */     
 }
 
 /* Calendário principal do react-calendar */
 .react-calendar {
   width: 100%;                           
-  background: white;                 
+  background: rgb(255, 255, 255);                 
   border: none;                           
   border-radius: 12px;                    
   font-family: 'Segoe UI', sans-serif;    
   box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-  padding: 10px;                         
+  padding: 10px;       
+  color: #333; /* ou qualquer cor escura que contraste com o fundo branco */                  
 }
 
 /* Barra de navegação do calendário (setas, mês) */
-.react-calendar__navigation {
-  display: flex;                          /* Coloca os botões em linha */
-  justify-content: space-between;        /* Distribui espaço entre eles */
-  margin-bottom: 10px;                  
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.react-calendar__navigation button:disabled {
+  color: #0f82ff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: default;
 }
 
 /* Estilo geral dos dias (tiles) do calendário */
@@ -35,7 +46,8 @@
   text-align: center;                 
   background: none;                    
   border-radius: 6px;                   
-  transition: 0.2s ease;                 
+  transition: 0.2s ease;   
+   color: #333; /* Cor dos dias normais */              
 }
 
 /* Dia selecionado */
@@ -46,14 +58,18 @@
 
 /* Dia atual */
 .react-calendar__tile--now {
-  background: #e0f3ff;                    
+  background: #ffffff;                    
   font-weight: bold;        
 }              
+
+.react-calendar__month-view__days__day--weekend {
+  color: #ff0000; /* Ou a mesma cor dos dias normais */
+}
 
 /* Bloco onde o calendário fica */
 .calendario {
   flex: 1;                            
-  background: white;
+  background:  #0f82ff; 
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
@@ -115,4 +131,18 @@ button[type="submit"] {
 /* Efeito ao passar o mouse no botão */
 button[type="submit"]:hover {
   background-color: #0c6fd1;
+}
+
+
+/* Responsivo */
+@media (max-width: 1024px) {
+  .agenda-container {
+    flex-direction: column;
+    padding: 100px 16px 32px 16px;
+  }
+
+  .formulario,
+  .calendario {
+    width: 100%;
+  }
 }

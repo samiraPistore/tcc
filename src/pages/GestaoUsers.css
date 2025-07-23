@@ -1,0 +1,107 @@
+/* GestaoUsers.css */
+
+.gestao-container {
+  width: 1700px; /* Mantém o tamanho fixo */
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.08);
+  overflow-x: auto; /* Garante rolagem se necessário */
+}
+
+/* Formulário de cadastro/edição */
+.form-cadastro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+
+.form-cadastro h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.form-cadastro input,
+.form-cadastro select {
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-cadastro button {
+  padding: 12px;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-cadastro button:hover {
+  background-color: #2980b9;
+}
+
+/* Wrapper da tabela para scroll */
+.tabela-wrapper {
+  max-height: 400px;   /* altura fixa pra ativar scroll */
+  overflow-y: auto;
+  border: 1px solid #ddd; /* opcional, só pra visual */
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+
+/* Tabela de usuários */
+.tabela-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,0.05);
+  margin-top: 1rem;
+}
+
+.tabela-usuarios th,
+.tabela-usuarios td {
+  border: 1px solid #ddd;
+  padding: 14px;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.tabela-usuarios th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.tabela-usuarios tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Botões de ação */
+.tabela-usuarios button {
+  padding: 6px 12px;
+  margin-right: 6px;
+  background-color: #ecf0f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.tabela-usuarios button:hover {
+  background-color: #d6d6d6;
+}
