@@ -1,6 +1,8 @@
 import { sql } from './sql.js';
 
 
+
+
 await sql`
   CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY,
@@ -8,7 +10,7 @@ await sql`
     email TEXT NOT NULL UNIQUE,
     senha TEXT NOT NULL,
     cargo TEXT NOT NULL
-  )
+  );
 `
 
 
@@ -16,11 +18,16 @@ await sql`
   CREATE TABLE IF NOT EXISTS equipamentos (
     id UUID PRIMARY KEY,
     nome_equipamento TEXT NOT NULL,
-    tipo TEXT NOT NULL,
+    modelo TEXT,
     local TEXT NOT NULL,
-    estado_atual TEXT NOT NULL
+    status TEXT NOT NULL,
+    fabricante TEXT,
+    ano_aquisicao INT,
+    descricao TEXT  
   );
-`
+`;
+
+
 await sql`
   CREATE TABLE IF NOT EXISTS sensores (
     id UUID PRIMARY KEY,
@@ -28,11 +35,7 @@ await sql`
     nome TEXT NOT NULL,
     tipo TEXT NOT NULL
   );
-
-
 `
-
-
 
 
 await sql`
@@ -42,8 +45,6 @@ await sql`
     valor DECIMAL NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
-
-
 `
 
 
@@ -52,12 +53,10 @@ await sql`
     id UUID PRIMARY KEY,
     equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
     data_manutencao DATE NOT NULL,
-    estado_atual_equipamento TEXT NOT NULL,
+    status TEXT NOT NULL,
     responsavel_id UUID REFERENCES users(id)
   )
 `;
-
-
 
 
 await sql`
@@ -71,8 +70,6 @@ await sql`
     resolvido BOOLEAN DEFAULT FALSE
   )
 `;
-
-
 
 
 await sql`
@@ -93,13 +90,26 @@ await sql`
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `
+
+
 await sql`
   CREATE TABLE IF NOT EXISTS agendamentos (
     id UUID PRIMARY KEY,
     equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
     data_agendada DATE NOT NULL,
-    tipo TEXT NOT NULL, -- preventiva, corretiva, inspeção...
-    responsavel TEXT,
-    observacoes TEXT
+    status TEXT NOT NULL,
+    tecnico TEXT,
+    descriçao TEXT
   );
+`
+await sql`
+  CREATE TABLE  IF NOT EXISTS analises (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    equipamento_id UUID REFERENCES equipamentos(id),
+    temperatura DECIMAL,
+    vibracao DECIMAL,
+    ruido DECIMAL,
+    resultado BOOLEAN, -- 0 ou 1
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 `

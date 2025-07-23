@@ -1,13 +1,26 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
+
+import express from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { DatabasePostgres } from '../dataBasePostgres.js';
+
 const router = express.Router();
-const { DatabasePostgres } = require('./dataBasePostgres');
 const db = new DatabasePostgres();
-const jwt = require('jsonwebtoken');
 
+const SECRET = process.env.JWT_SECRET || 'segredo123';
 
+router.post('/register', async (req, res) => {
+  const { name, email, senha, cargo } = req.body;
 
-const SECRET = 'segredo123';
+  const existingUser = await db.findByEmail(email);
+  if (existingUser) {
+    return res.status(400).json({ msg: 'Email já está cadastrado!' });
+  }
+
+  const hashedSenha = await bcrypt.hash(senha, 10);
+  await db.createUser({ name, email, senha: hashedSenha, cargo });
+  res.status(201).json({ msg: 'Usuário criado!' });
+});
 
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
@@ -22,8 +35,17 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ message: 'Senha incorreta' });
   }
 
-  const token = jwt.sign({ id: usuario.id, email: usuario.email }, SECRET, { expiresIn: '1h' });
-  res.json({ token });
+  const token = jwt.sign(
+    { id: usuario.id, email: usuario.email, cargo: usuario.cargo },
+    SECRET,
+    { expiresIn: '1d' }
+  );
+
+  res.json({
+    msg: 'Login realizado!',
+    token,
+    user: { id: usuario.id, name: usuario.name, email: usuario.email },
+  });
 });
 
-module.exports = router;
+export default router;
