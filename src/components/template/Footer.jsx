@@ -4,7 +4,7 @@ import React from 'react';
 const Footer = () => (
     <footer className="footer" >
         <span>
-            Desenvolvido por Matheus Rodrigues
+            Desenvolvido por SEMJ TECH
         </span>
     </footer>
 )

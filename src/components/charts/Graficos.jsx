@@ -1,35 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+import axios from 'axios';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-export default function GraficoAnalise() {
-  const [dados, setDados] = useState({ falha: 0, normal: 0 });
-
+function MeuGrafico() {
+  const [dados, setDados] = useState(null);
 
   useEffect(() => {
-  fetch('http://localhost:3010/analise/resumo/geral')
-    .then(res => res.json())
-    .then(data => setDados(data))
-    .catch(err => console.error("Erro ao carregar dados do gráfico", err));
-}, []);
+    axios.get("http://localhost:3010/analise/resumo/geral").then((res) => {
+      // Transforma resultado em texto para o gráfico
+      const labels = res.data.map(item => item.resultado === 1 ? "Falha" : "Normal");
+      const values = res.data.map(item => Number(item.quantidade));
 
-  const chartData = {
-    labels: ['Funcionando Normalmente', 'Falhas Detectadas'],
-    datasets: [{
-      label: 'Quantidade de Equipamentos',
-      data: [dados.normal, dados.falha],
-      backgroundColor: ['#4CAF50', '#F44336'],
-      borderColor: ['#388E3C', '#D32F2F'],
-      borderWidth: 1
-    }]
-  };
+      setDados({
+        labels,
+        datasets: [
+          {
+            label: "Ocorrências",
+            data: values,
+            backgroundColor: ['#cc3b3bff', '#3b82f6']
+          }
+        ]
+      });
+    });
+  }, []);
 
-  return (
-    <div style={{ width: '400px', margin: 'auto' }}>
-      <h3 style={{ textAlign: 'center' }}>Análise de Equipamentos</h3>
-      <Pie data={chartData} />
-    </div>
-  );
+  if (!dados) return <p>Carregando gráfico...</p>;
+
+  return <Bar data={dados} />;
 }
+
+export default MeuGrafico;

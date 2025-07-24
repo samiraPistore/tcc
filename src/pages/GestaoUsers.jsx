@@ -102,6 +102,7 @@ const GestaoUsers = () => {
       title="Gestão de Usuários"
       subtitle="Gerencie permissões, cargos e acessos do sistema"
     >
+    
       <div className="gestao-container">
         {/* conteúdo original */}
         <form onSubmit={editando ? salvarEdicao : cadastrarUsuario} className="form-cadastro">

@@ -15,6 +15,11 @@ function Config() {
     navigate('/gestao-usuarios');
   };
 
+  const irParaIntegraçõesDoSistema = () => {
+    navigate('/integraco');
+  };
+
+
   return (
     <Main
       icon="cogs" 
@@ -66,7 +71,7 @@ function Config() {
         {/* Integrações */}
         <div className="config-section"></div>
         <h3>Integrações do Sistema</h3>
-        <button onClick={irParaGestaoUsuarios}>Integrações do Sistema</button>
+        <button onClick={irParaIntegraçõesDoSistema}>Integrações do Sistema</button>
 
         {/* Análise Preditiva */}
         <div className="config-section"></div>

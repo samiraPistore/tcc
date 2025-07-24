@@ -1,7 +1,8 @@
 /* GestaoUsers.css */
 
 .gestao-container {
-  width: 1700px; /* Mantém o tamanho fixo */
+  width: 1600px; /* Mantém o tamanho fixo */
+  height: 90vh;
   margin: 2rem auto;
   padding: 2rem;
   font-family: Arial, sans-serif;
@@ -11,6 +12,9 @@
   overflow-x: auto; /* Garante rolagem se necessário */
 }
 
+nav{
+  height: 90vh;
+}
 /* Formulário de cadastro/edição */
 .form-cadastro {
   display: flex;

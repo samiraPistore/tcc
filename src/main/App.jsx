@@ -2,12 +2,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'font-awesome/css/font-awesome.min.css';
 import './App.css'; // Verifique se esse arquivo existe e o caminho está correto
-
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-
 // Importação dos componentes do layout e páginas
 import AppRoutes from './Routes'; // ou o caminho correto para o seu Route.jsx
+
 
 
 // Componente principal da aplicação que controla as rotas e autenticação

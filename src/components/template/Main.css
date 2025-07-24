@@ -13,7 +13,8 @@ html, body {
 
 /* Main container centralizado com limite de largura */
 main.content {
-  width: 1720px;
+  width: 100vw;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;

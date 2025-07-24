@@ -12,7 +12,7 @@ import GestaoUsers from '../pages/GestaoUsers';
 import HistoricoMa from '../pages/HistoricoMa';
 import PrevisoesFal from '../pages/PrevisoesFal';
 import RelatorioAn from '../pages/RelatorioAn';
-
+import IntegracoesSistema from '../pages/IntegracoesSistema'
 
 
 
@@ -160,6 +160,18 @@ const AppRoutes = ({ isAuthenticated, setIsAuthenticated, handleLogout }) => {
     <PrivateRoute isAuthenticated={isAuthenticated}>
       <Layout handleLogout={handleLogout}>
         <RelatorioAn />
+      </Layout>
+    </PrivateRoute>
+  }
+/>
+
+
+<Route
+  path="/integracoes"
+  element={
+    <PrivateRoute isAuthenticated={isAuthenticated}>
+      <Layout handleLogout={handleLogout}>
+        <IntegracoesSistema />
       </Layout>
     </PrivateRoute>
   }

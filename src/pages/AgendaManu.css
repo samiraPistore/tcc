@@ -132,6 +132,12 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #0c6fd1;
 }
+.agenda-container select,
+.agenda-container input,
+.agenda-container textarea {
+  color: black !important;
+  background-color: white !important;
+}
 
 
 /* Responsivo */

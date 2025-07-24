@@ -9,7 +9,7 @@ const AgendaManu = () => {
   
   // Estado para armazenar os dados do formulário de manutenção
   const [form, setForm] = useState({
-    equipamentoId: null,
+    equipamentoId: '',
     equipamentoNome: '',
     data: '',
     status: '',

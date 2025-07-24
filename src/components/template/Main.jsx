@@ -1,6 +1,7 @@
 import './Main.css';
 import React from 'react';
 import Header from './Header';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Main = (props) => (
   <>
