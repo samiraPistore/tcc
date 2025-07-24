@@ -9,13 +9,30 @@ const sensores = [
 
 
 function gerarLeitura(sensor) {
-  const valor = parseFloat((Math.random() * (sensor.max - sensor.min) + sensor.min).toFixed(2));
+  const chanceFalha = 0.1; // 10% de chance de falha
+  let valor;
+
+  if (Math.random() < chanceFalha) {
+    // Gera valor fora do intervalo para simular falha
+    if (Math.random() < 0.5) {
+      // abaixo do min, até 10% a menos que o min
+      valor = parseFloat(((sensor.min * 0.9) * Math.random()).toFixed(2));
+    } else {
+      // acima do max, até 10% a mais que o max
+      valor = parseFloat((sensor.max + (sensor.max * 0.1) * Math.random()).toFixed(2));
+    }
+  } else {
+    // valor normal dentro do range
+    valor = parseFloat((Math.random() * (sensor.max - sensor.min) + sensor.min).toFixed(2));
+  }
+
   return {
     sensor_id: sensor.id,
     valor,
     timestamp: new Date().toISOString()
   };
 }
+
 
 
 async function enviarLeituras() {

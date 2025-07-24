@@ -164,17 +164,17 @@ export class DatabasePostgres {
 
 
   // MANUTENÇÃO
-  async listManutencao() {
+  async listManutencoes() {
     return await sql`SELECT * FROM manutencao`;
   }
 
 
   async createManutencao(manutencao) {
     const id = randomUUID();
-    const { equipamento_id, data_manutencao, status, responsavel_id } = manutencao;
+    const { equipamento_id, data_manutencao, status, descricao, responsavel_id } = manutencao;
     await sql`
-      INSERT INTO manutencao (id, equipamento_id, data_manutencao, status, responsavel_id)
-      VALUES (${id}, ${equipamento_id}, ${data_manutencao}, ${status}, ${responsavel_id})
+      INSERT INTO manutencao (id, equipamento_id, data_manutencao, status, descricao, responsavel_id)
+      VALUES (${id}, ${equipamento_id}, ${data_manutencao}, ${status},${descricao}, ${responsavel_id})
     `;
   }
 
@@ -186,12 +186,13 @@ export class DatabasePostgres {
 
 
   async updateManutencao(id, manutencao) {
-    const { equipamento_id, data_manutencao, status, responsavel_id } = manutencao;
+    const { equipamento_id, data_manutencao, status, descricao, responsavel_id } = manutencao;
     await sql`
       UPDATE manutencao
       SET equipamento_id = ${equipamento_id},
           data_manutencao = ${data_manutencao},
           status = ${status},
+          descricao = ${descricao},
           responsavel_id = ${responsavel_id}
       WHERE id = ${id}
     `;

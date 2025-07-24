@@ -13,7 +13,7 @@ Content-Type: application/json
 GET http://localhost:3010/users
 
 ### ATUALIZAR (PUT)
-PUT http://localhost:3010/users/8ad8c68a-7e92-4a3b-9018-8287366586a7
+PUT http://localhost:3010/users/2f72b345-1135-4bbd-84af-844783903ce8
 Content-Type: application/json
 
 {
@@ -27,4 +27,19 @@ Content-Type: application/json
 DELETE http://localhost:3010/users/94d860d4-ccbe-48c2-b230-6ffc798a6536
 
 ### Enviar
-GET http://localhost:3010/analise/a5b4b4d7-1685-4878-9892-ce2d091661a4
+GET http://localhost:3010/equipamentos
+
+
+### CRIAR usuário
+POST http://localhost:3010/manutencoes
+Content-Type: application/json
+
+{
+    "equipamento_id": "d8e16f11-5e76-4547-bdb3-d97771423a6d" ,
+    "data_manutencao": "2025-07-31",
+    "status": "pendente",
+    "responsavel_id": "d51db308-df69-4390-9322-70de55061df0"
+}
+
+### LISTAR todos
+GET http://localhost:3010/manutencoes

@@ -99,7 +99,7 @@ await sql`
     data_agendada DATE NOT NULL,
     status TEXT NOT NULL,
     tecnico TEXT,
-    descriçao TEXT
+    descricao TEXT
   );
 `
 await sql`

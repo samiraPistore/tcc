@@ -1,51 +1,54 @@
-
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { DatabasePostgres } from '../dataBasePostgres.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
-const db = new DatabasePostgres();
 
-const SECRET = process.env.JWT_SECRET || 'segredo123';
+export default (database) => {
+  // Cadastro
+  router.post('/register', async (req, res) => {
+    const { name, email, senha, cargo } = req.body;
 
-router.post('/register', async (req, res) => {
-  const { name, email, senha, cargo } = req.body;
+    const existingUser = await database.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ msg: 'Email já está cadastrado!' });
+    }
 
-  const existingUser = await db.findByEmail(email);
-  if (existingUser) {
-    return res.status(400).json({ msg: 'Email já está cadastrado!' });
-  }
-
-  const hashedSenha = await bcrypt.hash(senha, 10);
-  await db.createUser({ name, email, senha: hashedSenha, cargo });
-  res.status(201).json({ msg: 'Usuário criado!' });
-});
-
-router.post('/login', async (req, res) => {
-  const { email, senha } = req.body;
-
-  const usuario = await db.findByEmail(email);
-  if (!usuario) {
-    return res.status(404).json({ message: 'Usuário não encontrado' });
-  }
-
-  const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
-  if (!senhaCorreta) {
-    return res.status(401).json({ message: 'Senha incorreta' });
-  }
-
-  const token = jwt.sign(
-    { id: usuario.id, email: usuario.email, cargo: usuario.cargo },
-    SECRET,
-    { expiresIn: '1d' }
-  );
-
-  res.json({
-    msg: 'Login realizado!',
-    token,
-    user: { id: usuario.id, name: usuario.name, email: usuario.email },
+    const hashedSenha = await bcrypt.hash(senha, 10);
+    await database.createUser({ name, email, senha: hashedSenha, cargo });
+    res.status(201).json({ msg: 'Usuário criado!' });
   });
-});
 
-export default router;
+  // Login
+  router.post('/login', async (req, res) => {
+    try {
+      const { email, senha } = req.body;
+      const user = await database.findByEmail(email);
+
+      if (!user) return res.status(400).json({ msg: 'Usuário não encontrado' });
+
+      const isSenhaValid = await bcrypt.compare(senha, user.senha);
+      if (!isSenhaValid) return res.status(401).json({ msg: 'Senha inválida!' });
+
+      const token = jwt.sign(
+        { id: user.id, email: user.email, cargo: user.cargo },
+        process.env.JWT_SECRET || 'minhaChaveSuperSecreta',
+        { expiresIn: '1d' }
+      );
+
+      return res.json({
+        msg: 'Login realizado!',
+        token,
+        user: { id: user.id, name: user.name, email: user.email }
+      });
+    } catch (err) {
+      console.error('Erro no login:', err);
+      return res.status(500).json({ msg: 'Erro interno no servidor' });
+    }
+  });
+
+  return router;
+};

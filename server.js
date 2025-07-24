@@ -6,11 +6,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import './routes/analise.js'; // Isso dispara a análise contínua
-import analiseRouter from './routes/analise.js';
 import cron from 'node-cron';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 
 
 dotenv.config();
@@ -20,40 +20,6 @@ app.use(cors());
 app.use(express.json());
 
 const database = new DatabasePostgres();
-
-//TESTES
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const pyPath = path.join(__dirname, 'prevent', 'analise.py');
-
-// Executa uma vez na inicialização
-const pyProcess = spawn('python', [pyPath]);
-pyProcess.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`);
-});
-pyProcess.stderr.on('data', (data) => {
-  console.error(`stderr: ${data}`);
-});
-pyProcess.on('close', (code) => {
-  console.log(`processo python finalizado com código ${code}`);
-});
-
-// Agendamento a cada minuto
-cron.schedule('*/1 * * * *', () => {
-  console.log('⏰ Executando análise automática (a cada 1 minuto)...');
-  const processo = spawn('python', [pyPath]);
-  processo.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
-  });
-  processo.stderr.on('data', (data) => {
-    console.error(`stderr: ${data}`);
-  });
-  processo.on('close', (code) => {
-    console.log(`processo python finalizado com código ${code}`);
-  });
-});
-
 
 // Cadastro
 app.post('/auth/register', async (req, res) => {
@@ -71,21 +37,38 @@ app.post('/auth/register', async (req, res) => {
 });
 
 // Login
+// Login
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
     const user = await database.findByEmail(email);
 
-    if (!user) return res.status(400).json({ msg: 'Usuário não encontrado' });
-
+    if (!user) {
+      return res.status(400).json({ msg: 'Usuário não encontrado' });
+    }
 
     const isSenhaValid = await bcrypt.compare(senha, user.senha);
-    if (!isSenhaValid) return res.status(401).json({ msg: 'Senha inválida!' });
+    if (!isSenhaValid) {
+      return res.status(401).json({ msg: 'Senha inválida!' });
+    }
 
-    const token = jwt.sign({ id: user.id, email: user.email, cargo:user.cargo }, process.env.JWT_SECRET || 'minhaChaveSuperSecreta', { expiresIn: '1d' });
+    const token = jwt.sign(
+      { id: user.id, email: user.email, cargo: user.cargo },
+      process.env.JWT_SECRET || 'minhaChaveSuperSecreta',
+      { expiresIn: '1d' }
+    );
 
-    return res.json({ msg: 'Login realizado!', token, user: { id: user.id, name: user.name, email: user.email } });
-
+    // ✅ Aqui retorna o cargo no objeto user
+    return res.json({
+      msg: 'Login realizado!',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        cargo: user.cargo  // <-- IMPORTANTE!
+      }
+    });
 
   } catch (err) {
     console.error('Erro no login:', err);
@@ -104,6 +87,7 @@ app.get('/users', async (req, res) => {
 
 
 
+
 app.get('/users/:id', async (req, res) => {
   const user = await database.getUserById(req.params.id);
   if (user) {
@@ -117,11 +101,19 @@ app.get('/users/:id', async (req, res) => {
 
 
 
+
+
+
+
 app.post('/users', async (req, res) => {
   const { name, email, senha, cargo } = req.body;
   if (!name || !email || !senha) {
     return res.status(400).json({ msg: 'Preencha todos os campos!' });
   }
+
+
+
+
 
 
 
@@ -134,6 +126,10 @@ app.post('/users', async (req, res) => {
 
 
 
+
+
+
+
   await database.createUser({ name, email, senha, cargo });
   res.status(201).json({ msg: 'Usuário criado com sucesso!' });
 });
@@ -141,9 +137,17 @@ app.post('/users', async (req, res) => {
 
 
 
+
+
+
+
 app.put('/users/:id', async (req, res) => {
   const { name, email, senha, cargo } = req.body;
   const user = {};
+
+
+
+
 
 
 
@@ -156,9 +160,17 @@ app.put('/users/:id', async (req, res) => {
 
 
 
+
+
+
+
   await database.updateUser(req.params.id, user);
   res.status(204).send();
 });
+
+
+
+
 
 
 
@@ -171,8 +183,11 @@ app.delete('/users/:id', async (req, res) => {
 
 
 
+
+
+
 // EQUIPAMENTOS
-app.post('/equipamentos', async (req, res) => {
+app.post('/equipamentos', async (req, res) => { 
   const { nome_equipamento, modelo, local, status, fabricante, ano_aquisicao, descricao } = req.body;
   await database.createEquipamento({ nome_equipamento, modelo, local, status, fabricante, ano_aquisicao, descricao });
   res.status(201).send();
@@ -225,7 +240,7 @@ app.post('/sensores', async (req, res) => {
 
 
 
-app.get('/sensores', async (req, res) => {
+app.get('/sensores', async (req, res) => { 
   const sensores = await database.listSensores();
   res.json(sensores);
 });
@@ -290,16 +305,6 @@ app.get('/manutencoes', async (req, res) => {
   const manutencoes = await database.listManutencoes();
   res.json(manutencoes);
 });
-
-
-
-
-app.get('/manutencoes/:id', async (req, res) => {
-  const manutencao = await database.getManutencaoById(req.params.id);
-  res.json(manutencao);
-});
-
-
 
 
 app.put('/manutencoes/:id', async (req, res) => {
@@ -396,12 +401,13 @@ app.get('/relatorios', async (req, res) => {
 app.post('/relatorios', async (req, res) => {
   await database.gerarRelatorio(req.body);
   res.status(201).send();
-});
+})
 
 
 
 
-// AGENDAMENTOS
+
+
 app.post('/agendamentos', async (req, res) => {
   const { equipamento_id, data_agendada, status, responsavel, observacoes } = req.body;
 
@@ -436,7 +442,42 @@ app.get('/agendamentos', async (req, res) => {
     res.status(500).json({ msg: 'Erro interno ao buscar agendamentos.' });
   }
 });
-app.use('/analise', analiseRouter);
+
+
+//TESTES
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const pyPath = path.join(__dirname, 'prevent', 'analise.py');
+
+// Executa uma vez na inicialização
+const pyProcess = spawn('python', [pyPath]);
+pyProcess.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+});
+pyProcess.stderr.on('data', (data) => {
+  console.error(`stderr: ${data}`);
+});
+pyProcess.on('close', (code) => {
+  console.log(`processo python finalizado com código ${code}`);
+});
+
+// Agendamento a cada minuto
+cron.schedule('*/1 * * * *', () => {
+  console.log('⏰ Executando análise automática (a cada 1 minutos)...');
+  const processo = spawn('python', [pyPath]);
+  processo.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+  processo.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+  processo.on('close', (code) => {
+    console.log(`processo python finalizado com código ${code}`);
+  });
+});
+
+
 
 
 // START
