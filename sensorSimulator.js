@@ -1,28 +1,22 @@
 import axios from 'axios';
 
-
 const sensores = [
   { id: 'acee7d7b-0550-4999-8a1a-b1cb2a86b255', tipo: 'Temperatura', min: 20, max: 90 },
   { id: '109e4bc7-c25a-4fea-ac7d-de2b2b8b95bb', tipo: 'Vibração', min: 0, max: 100 },
   { id: 'ec556c0a-4645-4fa0-b9ef-fbfbcf1dfd1f', tipo: 'Pressão', min: 10, max: 50 }
 ];
 
-
 function gerarLeitura(sensor) {
-  const chanceFalha = 0.1; // 10% de chance de falha
+  const chanceFalha = 0.9; // 90% de chance de falha
   let valor;
 
   if (Math.random() < chanceFalha) {
-    // Gera valor fora do intervalo para simular falha
     if (Math.random() < 0.5) {
-      // abaixo do min, até 10% a menos que o min
       valor = parseFloat(((sensor.min * 0.9) * Math.random()).toFixed(2));
     } else {
-      // acima do max, até 10% a mais que o max
       valor = parseFloat((sensor.max + (sensor.max * 0.1) * Math.random()).toFixed(2));
     }
   } else {
-    // valor normal dentro do range
     valor = parseFloat((Math.random() * (sensor.max - sensor.min) + sensor.min).toFixed(2));
   }
 
@@ -33,12 +27,10 @@ function gerarLeitura(sensor) {
   };
 }
 
-
-
 async function enviarLeituras() {
   for (const sensor of sensores) {
     const leitura = gerarLeitura(sensor);
-    console.log('Enviando leitura:', leitura);  // DEBUG
+    console.log('Enviando leitura:', leitura);
     try {
       await axios.post('http://localhost:3010/leituras', leitura);
       console.log(`✔ Leitura enviada: ${sensor.tipo} → ${leitura.valor}`);
@@ -48,7 +40,4 @@ async function enviarLeituras() {
   }
 }
 
-
 setInterval(enviarLeituras, 10000);
-
-

@@ -49,14 +49,15 @@ await sql`
 
 
 await sql`
-  CREATE TABLE IF NOT EXISTS manutencao (
+  CREATE TABLE IF NOT EXISTS agendamentos (
     id UUID PRIMARY KEY,
     equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
-    data_manutencao DATE NOT NULL,
+    data_agendada DATE NOT NULL,
     status TEXT NOT NULL,
-    responsavel_id UUID REFERENCES users(id)
-  )
-`;
+    responsavel TEXT,
+    descricao TEXT
+  );
+`
 
 
 await sql`

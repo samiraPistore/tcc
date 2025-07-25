@@ -15,19 +15,47 @@ router.get('/executar', (req, res) => {
 
   const processo = spawn('python', [pyPath]);
 
+  let stdoutData = '';
+  let stderrData = '';
+
   processo.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
+    const text = data.toString();
+    stdoutData += text;
+    console.log(`stdout: ${text}`);
   });
 
   processo.stderr.on('data', (data) => {
-    console.error(`stderr: ${data}`);
+    const text = data.toString();
+    stderrData += text;
+    console.error(`stderr: ${text}`);
+  });
+
+  processo.on('error', (err) => {
+    console.error('Erro ao iniciar o script Python:', err);
+    res.status(500).json({ status: 'Erro ao executar análise', error: err.message });
   });
 
   processo.on('close', (code) => {
     console.log(`Script Python finalizado com código ${code}`);
-    res.send({ status: 'Análise executada com sucesso', code });
+
+    if (code === 0) {
+      res.json({
+        status: 'Análise executada com sucesso',
+        codigoSaida: code,
+        stdout: stdoutData.trim(),
+        stderr: stderrData.trim()
+      });
+    } else {
+      res.status(500).json({
+        status: 'Erro na execução do script Python',
+        codigoSaida: code,
+        stdout: stdoutData.trim(),
+        stderr: stderrData.trim()
+      });
+    }
   });
 });
+
 
 
 router.get("/resumo/geral", async (req, res) => {

@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 import uuid
-from datetime import datetime
+
 load_dotenv()  # carrega variáveis do .env
 
 # Conecta ao banco
@@ -27,7 +27,6 @@ for (equipamento_id,) in equipamentos:
         FROM sensores s
         JOIN leituras l ON l.sensor_id = s.id
         WHERE s.equipamento_id = %s 
-
     """, (equipamento_id,))
     
     leituras = cursor.fetchall()
@@ -39,7 +38,7 @@ for (equipamento_id,) in equipamentos:
             valores[tipo] = float(valor)
 
     if None in valores.values():
-        print(f" Valores incompletos para equipamento {equipamento_id}, pulando...")
+        print(f"Valores incompletos para equipamento {equipamento_id}, pulando...")
         continue
 
     entrada_modelo = [[valores['temperatura'], valores['vibração'], valores['pressão']]]
@@ -47,9 +46,7 @@ for (equipamento_id,) in equipamentos:
 
     print(f"Equipamento {equipamento_id}: Predição = {predicao}")
 
-
     # Insere na tabela de análises
-    
     cursor.execute("""
         INSERT INTO analises (id, equipamento_id, resultado, descricao, gravidade, data)
         VALUES (%s, %s, %s, %s, %s, %s)
@@ -61,6 +58,7 @@ for (equipamento_id,) in equipamentos:
         'Alta' if predicao == 1 else 'Baixa',
         datetime.now()
     ))
+
     if predicao == 1:
         cursor.execute("""
             INSERT INTO alertas (id, equipamento_id, data_alerta, tipo, descricao, nivel_gravidade)
@@ -71,6 +69,23 @@ for (equipamento_id,) in equipamentos:
             'Falha preditiva',
             'Alta probabilidade de falha detectada',
             3
+        ))
+
+        # Insere Ordem de Serviço automaticamente
+        os_id = str(uuid.uuid4())
+        data_abertura = datetime.now().date()
+        status = 'pendente'  # ou 'aberta', conforme seu sistema
+        descricao_os = 'OS gerada automaticamente por predição de falha'
+
+        cursor.execute("""
+            INSERT INTO OS (id, equipamento_id, descricao, status, data_abertura)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            os_id,
+            equipamento_id,
+            descricao_os,
+            status,
+            data_abertura
         ))
 
 conn.commit()

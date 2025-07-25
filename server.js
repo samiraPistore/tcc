@@ -37,38 +37,21 @@ app.post('/auth/register', async (req, res) => {
 });
 
 // Login
-// Login
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
     const user = await database.findByEmail(email);
 
-    if (!user) {
-      return res.status(400).json({ msg: 'Usuário não encontrado' });
-    }
+    if (!user) return res.status(400).json({ msg: 'Usuário não encontrado' });
+
 
     const isSenhaValid = await bcrypt.compare(senha, user.senha);
-    if (!isSenhaValid) {
-      return res.status(401).json({ msg: 'Senha inválida!' });
-    }
+    if (!isSenhaValid) return res.status(401).json({ msg: 'Senha inválida!' });
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, cargo: user.cargo },
-      process.env.JWT_SECRET || 'minhaChaveSuperSecreta',
-      { expiresIn: '1d' }
-    );
+    const token = jwt.sign({ id: user.id, email: user.email, cargo:user.cargo }, process.env.JWT_SECRET || 'minhaChaveSuperSecreta', { expiresIn: '1d' });
 
-    // ✅ Aqui retorna o cargo no objeto user
-    return res.json({
-      msg: 'Login realizado!',
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        cargo: user.cargo  // <-- IMPORTANTE!
-      }
-    });
+    return res.json({ msg: 'Login realizado!', token, user: { id: user.id, name: user.name, email: user.email } });
+
 
   } catch (err) {
     console.error('Erro no login:', err);
@@ -206,10 +189,16 @@ app.get('/equipamentos', async (req, res) => {
 
 
 
-app.get('/equipamentos/:id', async (req, res) => {
-  const equipamentos = await database.getEquipamentoById(req.params.id);
-  res.json(equipamentos);
+app.get('/equipamentos', async (req, res) => {
+  try {
+    const equipamentos = await database.getAllEquipamentos(); // exemplo de função
+    res.json(equipamentos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Erro ao buscar equipamentos' });
+  }
 });
+
 
 
 
@@ -464,7 +453,7 @@ pyProcess.on('close', (code) => {
 
 // Agendamento a cada minuto
 cron.schedule('*/1 * * * *', () => {
-  console.log('⏰ Executando análise automática (a cada 1 minutos)...');
+  console.log('Executando análise automática (a cada 1 minutos)...');
   const processo = spawn('python', [pyPath]);
   processo.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
@@ -476,7 +465,6 @@ cron.schedule('*/1 * * * *', () => {
     console.log(`processo python finalizado com código ${code}`);
   });
 });
-
 
 
 
