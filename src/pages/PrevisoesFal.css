@@ -1,20 +1,97 @@
-.grafico-tendencia-placeholder {
-  background-color: #fff;
-  margin-top: 30px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.05);
-  text-align: center;
-  color: #888;
-  font-style: italic;
+/* Estilização principal */
+.falhas-layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6fc;
 }
 
-.alerta-urgente {
-  margin-top: 20px;
-  padding: 16px 20px;
-  background-color: #dc3545;
-  color: white;
+/* Tabela de previsões */
+.tabela-previsoes {
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 16px;
+  background-color: #ffffff;
+  width: 460px;
+}
+
+.tabela-previsoes h2 {
+  margin-top: 0;
+  font-size: 24px;
   font-weight: bold;
-  border-radius: 8px;
+  color: #000;
+  margin-bottom: 20px;
 }
 
+.tabela-previsoes table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+.tabela-previsoes th {
+  text-align: left;
+  padding: 10px;
+  color: #131559;
+  font-weight: bold;
+}
+
+.tabela-previsoes td {
+  padding: 10px;
+  border-top: 1px solid #333;
+  vertical-align: top;
+}
+
+/* Gráfico */
+.grafico-area {
+  flex: 1;
+  margin-top: auto;
+}
+
+.grafico-area h3 {
+  color: #131559;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.grafico-box {
+  width: 400px;
+  height: 250px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* Alerta visual */
+.alerta-visual {
+  margin-top: 40px;
+  background-color: #f16c82;
+  padding: 16px 24px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 2px solid #00000080;
+  width: fit-content;
+}
+
+.alerta-visual img {
+  width: 42px;
+  height: 42px;
+}
+
+.alerta-visual .alerta-titulo {
+  color: #131559;
+  font-weight: bold;
+  font-size: 18px;
+  margin: 0;
+}
+
+.alerta-visual .alerta-texto {
+  color: #000;
+  font-size: 16px;
+  margin: 0;
+}

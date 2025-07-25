@@ -1,58 +1,65 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './PrevisoesFal.css';
 
 const PrevisoesFalhas = () => {
-  const [previsoes, setPrevisoes] = useState([]);
-  const [alertaUrgente, setAlertaUrgente] = useState(null);
-
-  useEffect(() => {
-    // Previsões de falhas
-    fetch('http://localhost:3000/api/previsoes')
-      .then(res => res.json())
-      .then(data => setPrevisoes(data));
-
-    // Alerta mais crítico
-    fetch('http://localhost:3000/api/alertas')
-      .then(res => res.json())
-      .then(data => {
-        const urgente = data.find(a => a.gravidade === 'alta');
-        setAlertaUrgente(urgente);
-      });
-  }, []);
-
   return (
-    <div className="maintenance-container">
-      <h2>Previsões de Falhas</h2>
-
-      {/* Tabela */}
-      <table>
-        <thead>
-          <tr>
-            <th>Previsão</th>
-            <th>Alerta</th>
-          </tr>
-        </thead>
-        <tbody>
-          {previsoes.map(item => (
-            <tr key={item.id}>
-              <td>{item.dataPrevista} - {item.equipamento}</td>
-              <td className={`risco-${item.gravidade}`}>{item.mensagem}</td>
+    <div className="falhas-layout">
+      {/* Tabela de previsões */}
+      <div className="tabela-previsoes">
+        <h2>Previsões de Falhas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Previsão</th>
+              <th>Alerta</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Gráfico de tendência */}
-      <div className="grafico-tendencia-placeholder">
-        <p>📈 Gráfico de Tendência (em construção)</p>
+          </thead>
+          <tbody>
+            <tr>
+              <td>xx/xx/xxxx</td>
+              <td>
+                <strong>Motor</strong><br />
+                falha prevista em 7 dias
+              </td>
+            </tr>
+            <tr>
+              <td>xx/xx/xxxx</td>
+              <td>
+                <strong>Esteira</strong><br />
+                falha prevista em 15 dias
+              </td>
+            </tr>
+            <tr>
+              <td>xx/xx/xxxx</td>
+              <td>
+                <strong>Compressor</strong><br />
+                falha prevista em 3 dias
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      {/* Alerta crítico */}
-      {alertaUrgente && (
-        <div className="alerta-urgente">
-          ⚠️ Alerta: {alertaUrgente.mensagem}
+      {/* Gráfico + alerta */}
+      <div className="grafico-area">
+        <h3>Gráfico de Tendência</h3>
+        <div className="grafico-box">
+          <img
+            src="https://quickchart.io/chart?c={type:'line',data:{labels:['Item 1','Item 2','Item 3','Item 4','Item 5'],datasets:[{label:'Falhas',data:[18,26,23,31,34,26,29,20,24],borderColor:'cyan',fill:false}]}}"
+            alt="Gráfico de tendência"
+            style={{ width: '100%', height: '100%' }}
+          />
         </div>
-      )}
+
+        {/* Alerta visual abaixo do gráfico */}
+        <div className="alerta-visual">
+          <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Alerta" />
+          <div>
+            <p className="alerta-titulo">Alerta</p>
+            <p className="alerta-texto">falha eminente no motor</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
