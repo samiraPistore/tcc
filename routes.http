@@ -42,4 +42,14 @@ Content-Type: application/json
 }
 
 ### LISTAR todos
-GET http://localhost:3010/manutencoes
+POST http://localhost:3010/os
+Content-Type: application/json
+
+{
+
+    "equipamento_id": "38182612-0bd2-415c-bfa1-8aeeb065dc12" ,
+    "descricao": "xxxxxxx",
+    "status": "aberta",
+    "data_abertura": "2025-07-26",
+    "data_fechamento": "2025-08-01"
+}

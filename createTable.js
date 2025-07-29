@@ -114,3 +114,25 @@ await sql`
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `
+
+await sql`
+  CREATE TABLE IF NOT EXISTS manutencao (
+    id UUID PRIMARY KEY,
+    equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
+    data_manutencao DATE NOT NULL,
+    status TEXT NOT NULL,
+    responsavel_id UUID REFERENCES users(id),
+    descricao TEXT
+  )
+`;
+
+await sql`
+CREATE TABLE IF NOT EXISTS previsoes_manutencao (
+  id UUID PRIMARY KEY,
+  equipamento_id UUID REFERENCES equipamentos(id),
+  data_prevista DATE NOT NULL,
+  dias_ate_manutencao INTEGER NOT NULL,
+  modelo_usado TEXT,
+  data_geracao TIMESTAMP DEFAULT NOW()
+);
+`

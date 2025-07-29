@@ -5,14 +5,18 @@ import os
 from dotenv import load_dotenv
 import uuid
 
+
 load_dotenv()  # carrega variáveis do .env
+
 
 # Conecta ao banco
 conn = psycopg2.connect(os.getenv("DATABASE_URL"))
 cursor = conn.cursor()
 
+
 # Carrega o modelo treinado
 modelo = load(os.path.join(os.path.dirname(__file__), 'modelo.pkl'))
+
 
 # Pega todos os equipamentos únicos
 cursor.execute("""
@@ -20,38 +24,49 @@ cursor.execute("""
 """)
 equipamentos = cursor.fetchall()
 
+
 for (equipamento_id,) in equipamentos:
-    # Coleta as últimas leituras por tipo de sensor
+    # Consulta as leituras mais recentes por tipo de sensor para esse equipamento
     cursor.execute("""
         SELECT s.tipo, l.valor
         FROM sensores s
         JOIN leituras l ON l.sensor_id = s.id
-        WHERE s.equipamento_id = %s 
+        WHERE s.equipamento_id = %s
+          AND l.timestamp = (
+            SELECT MAX(l2.timestamp)
+            FROM leituras l2
+            WHERE l2.sensor_id = s.id
+          )
     """, (equipamento_id,))
-    
+   
     leituras = cursor.fetchall()
 
-    # Pega o valor mais recente de cada tipo
+
+    # Pega a leitura mais recente de cada tipo
     valores = {'temperatura': None, 'vibração': None, 'pressão': None}
     for tipo, valor in leituras:
-        if tipo in valores and valores[tipo] is None:
+        if tipo in valores:
             valores[tipo] = float(valor)
+
 
     if None in valores.values():
         print(f"Valores incompletos para equipamento {equipamento_id}, pulando...")
         continue
 
+
     entrada_modelo = [[valores['temperatura'], valores['vibração'], valores['pressão']]]
     predicao = modelo.predict(entrada_modelo)[0]
 
+
     print(f"Equipamento {equipamento_id}: Predição = {predicao}")
 
-    # Insere na tabela de análises
+
+    # Insere resultado da análise
     cursor.execute("""
         INSERT INTO analises (id, equipamento_id, resultado, descricao, gravidade, data)
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (
-        str(uuid.uuid4()),  # gera UUID para id
+        str(uuid.uuid4()),
         equipamento_id,
         int(predicao),
         'Falha detectada' if predicao == 1 else 'Operação normal',
@@ -59,10 +74,12 @@ for (equipamento_id,) in equipamentos:
         datetime.now()
     ))
 
+
     if predicao == 1:
+        # Alerta
         cursor.execute("""
-            INSERT INTO alertas (id, equipamento_id, data_alerta, tipo, descricao, nivel_gravidade)
-            VALUES (gen_random_uuid(), %s, %s, %s, %s, %s)
+            INSERT INTO alertas (id, equipamento_id, data_alerta, descricao, nivel_gravidade)
+            VALUES (gen_random_uuid(), %s, %s, %s, %s)
         """, (
             equipamento_id,
             datetime.now().date(),
@@ -71,23 +88,23 @@ for (equipamento_id,) in equipamentos:
             3
         ))
 
-        # Insere Ordem de Serviço automaticamente
-        os_id = str(uuid.uuid4())
-        data_abertura = datetime.now().date()
-        status = 'pendente'  # ou 'aberta', conforme seu sistema
-        descricao_os = 'OS gerada automaticamente por predição de falha'
 
+        # Ordem de Serviço
+        os_id = str(uuid.uuid4())
         cursor.execute("""
             INSERT INTO OS (id, equipamento_id, descricao, status, data_abertura)
             VALUES (%s, %s, %s, %s, %s)
         """, (
             os_id,
             equipamento_id,
-            descricao_os,
-            status,
-            data_abertura
+            'OS gerada automaticamente por predição de falha',
+            'pendente',
+            datetime.now().date()
         ))
+
 
 conn.commit()
 cursor.close()
 conn.close()
+
+

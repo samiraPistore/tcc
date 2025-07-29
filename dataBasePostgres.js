@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 import { sql } from "./sql.js";
 import bcrypt from "bcrypt";
 
-
 export class DatabasePostgres {
   // USERS
   async listUsers() {
@@ -14,37 +13,31 @@ export class DatabasePostgres {
     }
   }
 
-
   async findByEmail(email) {
     const result = await sql`SELECT * FROM users WHERE email = ${email}`;
     return result[0];
   }
-
 
   async findByCargo(cargo) {
     const result = await sql`SELECT * FROM users WHERE cargo = ${cargo}`;
     return result[0];
   }
 
-
   async getUserById(id) {
     const result = await sql`SELECT * FROM users WHERE id = ${id}`;
     return result[0];
   }
-
 
   async createUser(user) {
     const id = randomUUID();
     const { name, email, senha, cargo } = user;
     const hashedSenha = await bcrypt.hash(senha, 10);
 
-
     await sql`
       INSERT INTO users (id, name, email, senha, cargo)
       VALUES (${id}, ${name}, ${email}, ${hashedSenha}, ${cargo})
     `;
   }
-
 
   async updateUser(id, user) {
     const { name, email, senha, cargo } = user;
@@ -64,17 +57,14 @@ export class DatabasePostgres {
     }
   }
 
-
   async deleteUser(id) {
     await sql`DELETE FROM users WHERE id = ${id}`;
   }
-
 
   // EQUIPAMENTOS
   async listEquipamentos() {
     return await sql`SELECT * FROM equipamentos`;
   }
-
 
   async createEquipamento(equipamento) {
     const id = randomUUID();
@@ -85,12 +75,10 @@ export class DatabasePostgres {
     `;
   }
 
-
   async getEquipamentoById(id) {
     const result = await sql`SELECT * FROM equipamentos WHERE id = ${id}`;
     return result[0];
   }
-
 
   async updateEquipamento(id, equipamento) {
     const { nome_equipamento, modelo, local, status, fabricante, ano_aquisicao, descricao } = equipamento;
@@ -102,17 +90,14 @@ export class DatabasePostgres {
     `;
   }
 
-
   async deleteEquipamento(id) {
     await sql`DELETE FROM equipamentos WHERE id = ${id}`;
   }
-
 
   // SENSORES
   async listSensores() {
     return await sql`SELECT * FROM sensores`;
   }
-
 
   async createSensor(sensor) {
     const id = randomUUID();
@@ -123,12 +108,10 @@ export class DatabasePostgres {
     `;
   }
 
-
   async getSensorById(id) {
     const result = await sql`SELECT * FROM sensores WHERE id = ${id}`;
     return result[0];
   }
-
 
   async updateSensor(id, sensor) {
     const { equipamento_id, nome, tipo } = sensor;
@@ -139,11 +122,9 @@ export class DatabasePostgres {
     `;
   }
 
-
   async deleteSensor(id) {
     await sql`DELETE FROM sensores WHERE id = ${id}`;
   }
-
 
   // LEITURAS
   async listLeiturasBySensor(sensor_id) {
@@ -152,6 +133,9 @@ export class DatabasePostgres {
     `;
   }
 
+  async listLeituras() {
+    return await sql`SELECT * FROM leituras ORDER BY timestamp DESC`;
+  }
 
   async createLeitura(leitura) {
     const id = randomUUID();
@@ -162,28 +146,31 @@ export class DatabasePostgres {
     `;
   }
 
-
   // MANUTENÇÃO
+  // Aqui a versão única da listManutencoes com JOIN para nome do equipamento e nome do responsável
   async listManutencoes() {
-    return await sql`SELECT * FROM manutencao`;
+    return await sql`
+      SELECT m.*, e.nome_equipamento, u.name AS nome_responsavel
+      FROM manutencao m
+      JOIN equipamentos e ON m.equipamento_id = e.id
+      JOIN users u ON m.responsavel_id = u.id
+      ORDER BY m.data_manutencao DESC
+    `;
   }
-
 
   async createManutencao(manutencao) {
     const id = randomUUID();
     const { equipamento_id, data_manutencao, status, descricao, responsavel_id } = manutencao;
     await sql`
       INSERT INTO manutencao (id, equipamento_id, data_manutencao, status, descricao, responsavel_id)
-      VALUES (${id}, ${equipamento_id}, ${data_manutencao}, ${status},${descricao}, ${responsavel_id})
+      VALUES (${id}, ${equipamento_id}, ${data_manutencao}, ${status}, ${descricao}, ${responsavel_id})
     `;
   }
-
 
   async getManutencaoById(id) {
     const result = await sql`SELECT * FROM manutencao WHERE id = ${id}`;
     return result[0];
   }
-
 
   async updateManutencao(id, manutencao) {
     const { equipamento_id, data_manutencao, status, descricao, responsavel_id } = manutencao;
@@ -198,17 +185,14 @@ export class DatabasePostgres {
     `;
   }
 
-
   async deleteManutencao(id) {
     await sql`DELETE FROM manutencao WHERE id = ${id}`;
   }
-
 
   // ALERTAS
   async listAlertas() {
     return await sql`SELECT * FROM alertas ORDER BY data_alerta DESC`;
   }
-
 
   async createAlerta(alerta) {
     const id = randomUUID();
@@ -219,22 +203,18 @@ export class DatabasePostgres {
     `;
   }
 
-
   async deleteAlerta(id) {
     await sql`DELETE FROM alertas WHERE id = ${id}`;
   }
-
 
   async resolverAlerta(id) {
     await sql`UPDATE alertas SET resolvido = TRUE WHERE id = ${id}`;
   }
 
-
   // ORDENS DE SERVIÇO (OS)
   async listOS() {
     return await sql`SELECT * FROM os`;
   }
-
 
   async createOS(os) {
     const id = randomUUID();
@@ -245,12 +225,10 @@ export class DatabasePostgres {
     `;
   }
 
-
   async getOSById(id) {
     const result = await sql`SELECT * FROM os WHERE id = ${id}`;
     return result[0];
   }
-
 
   async updateOS(id, os) {
     const { equipamento_id, descricao, status, data_abertura, data_fechamento } = os;
@@ -265,16 +243,36 @@ export class DatabasePostgres {
     `;
   }
 
-
   async deleteOS(id) {
     await sql`DELETE FROM os WHERE id = ${id}`;
   }
-
 
   // RELATÓRIOS
   async listRelatorios() {
     return await sql`SELECT * FROM relatorios`;
   }
+async getQuantidadeOrdensPorData() {
+    return await sql`
+      SELECT 
+        DATE(data_abertura) AS data,
+        COUNT(*) FILTER (WHERE status = 'aberta') AS abertas,
+        COUNT(*) FILTER (WHERE status = 'fechada') AS fechadas
+      FROM os
+      GROUP BY DATE(data_abertura)
+      ORDER BY DATE(data_abertura);
+    `;
+
+}
+
+async getQuantidadeOrdensPorStatus() {
+  return await sql`
+    SELECT 
+      status,
+      COUNT(*) AS quantidade
+    FROM os
+    GROUP BY status;
+  `;
+}
 
 
   // AGENDAMENTOS
@@ -286,20 +284,79 @@ export class DatabasePostgres {
     `;
   }
 
-
-  async listAgendamentos() {
-    return await sql`SELECT * FROM agendamentos`;
+  // ANALISES
+  async criarAnalise(analise) {
+    const id = randomUUID();
+    const { equipamento_id, resultado, descricao, gravidade, data } = analise;
+    await sql`
+      INSERT INTO analises (id, equipamento_id, resultado, descricao, gravidade, data)
+      VALUES (${id}, ${equipamento_id}, ${resultado}, ${descricao}, ${gravidade}, ${data})
+    `;
   }
 
-  async criarAnalise(analise) {
-  const id = randomUUID();
-  const { equipamento_id, resultado, descricao, gravidade, data } = analise;
-  await sql`
-    INSERT INTO analises (id, equipamento_id, resultado, descricao, gravidade, data)
-    VALUES (${id}, ${equipamento_id}, ${resultado}, ${descricao}, ${gravidade}, ${data})
+  async countAnalises() {
+    const result = await sql`SELECT COUNT(*) FROM analises`;
+    return parseInt(result[0].count);
+  }
+
+  async countAnalisesByResultado(valor) {
+    const result = await sql`SELECT COUNT(*) FROM analises WHERE resultado = ${valor}`;
+    return parseInt(result[0].count);
+  }
+
+
+
+async calcularMTBF() {
+  const result = await sql`
+    SELECT equipamento_id, data_manutencao
+    FROM manutencao
+    WHERE status = 'concluído'
+    ORDER BY equipamento_id, data_manutencao
   `;
+
+  // Dependendo da biblioteca sql, ajuste para pegar as linhas corretamente
+  const dados = result.rows || result;
+
+  const porEquipamento = {};
+
+  dados.forEach(({ equipamento_id, data_manutencao }) => {
+    if (!porEquipamento[equipamento_id]) {
+      porEquipamento[equipamento_id] = [];
+    }
+    porEquipamento[equipamento_id].push(new Date(data_manutencao));
+  });
+
+  const tempos = [];
+
+  for (const datas of Object.values(porEquipamento)) {
+    datas.sort((a, b) => a - b);
+
+    for (let i = 1; i < datas.length; i++) {
+      const diffMs = datas[i] - datas[i - 1];
+      const diffHoras = diffMs / (1000 * 60 * 60);
+      tempos.push(diffHoras);
+    }
+  }
+
+  const totalHoras = tempos.reduce((acc, t) => acc + t, 0);
+  const totalFalhas = tempos.length;
+
+  if (totalFalhas === 0) return null;
+
+  return totalHoras / totalFalhas; // Retorna número (não string)
 }
 
+async salvarPrevisaoManutencao({ id, equipamento_id, dias, data_prevista, modelo }) {
+  await this.db.query(sql`
+    INSERT INTO previsoes_manutencao (id, equipamento_id, dias_ate_manutencao, data_prevista, modelo_usado)
+    VALUES (${id}, ${equipamento_id}, ${dias}, ${data_prevista}, ${modelo})
+    ON CONFLICT (equipamento_id) DO UPDATE SET
+      dias_ate_manutencao = EXCLUDED.dias_ate_manutencao,
+      data_prevista = EXCLUDED.data_prevista,
+      modelo_usado = EXCLUDED.modelo_usado,
+      data_geracao = NOW()
+  `);
 }
 
 
+}

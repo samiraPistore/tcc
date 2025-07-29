@@ -5,7 +5,7 @@ import './createTable.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import './routes/analise.js'; // Isso dispara a análise contínua
+import analiseRouter from './routes/analise.js'
 import cron from 'node-cron';
 import { spawn } from 'child_process';
 import path from 'path';
@@ -13,17 +13,38 @@ import { fileURLToPath } from 'url';
 
 
 
+
+
+
 dotenv.config();
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 const database = new DatabasePostgres();
+
+
+
+
+app.use('/analise', analiseRouter);
+
+
+// Exemplo de rota no seu servidor Express
+app.post('/configuracoes', (req, res) => {
+  const { emailNotif, smsNotif, pushNotif } = req.body;
+  console.log('Preferências salvas:', { emailNotif, smsNotif, pushNotif });
+
+  // Aqui você poderia salvar no banco, se quiser
+  res.status(200).json({ msg: 'Preferências salvas com sucesso!' });
+});
 
 // Cadastro
 app.post('/auth/register', async (req, res) => {
   const { name, email, senha, cargo } = req.body;
+
 
   const existingUser = await database.findByEmail(email);
   if (existingUser) {
@@ -31,10 +52,13 @@ app.post('/auth/register', async (req, res) => {
   }
 
 
+
+
   const hashedSenha = await bcrypt.hash(senha, 10);
   await database.createUser({ name, email, senha: hashedSenha, cargo });
   res.status(201).json({ msg: 'Usuário criado!' });
 });
+
 
 // Login
 app.post('/auth/login', async (req, res) => {
@@ -42,15 +66,22 @@ app.post('/auth/login', async (req, res) => {
     const { email, senha } = req.body;
     const user = await database.findByEmail(email);
 
+
     if (!user) return res.status(400).json({ msg: 'Usuário não encontrado' });
+
+
 
 
     const isSenhaValid = await bcrypt.compare(senha, user.senha);
     if (!isSenhaValid) return res.status(401).json({ msg: 'Senha inválida!' });
 
+
     const token = jwt.sign({ id: user.id, email: user.email, cargo:user.cargo }, process.env.JWT_SECRET || 'minhaChaveSuperSecreta', { expiresIn: '1d' });
 
+
     return res.json({ msg: 'Login realizado!', token, user: { id: user.id, name: user.name, email: user.email } });
+
+
 
 
   } catch (err) {
@@ -60,12 +91,19 @@ app.post('/auth/login', async (req, res) => {
 });
 
 
+
+
 // USERS
 app.get('/users', async (req, res) => {
   const users = await database.listUsers();
   const usersSemSenha = users.map(({ senha, ...rest }) => rest);
   res.json(usersSemSenha);
 });
+
+
+
+
+
 
 
 
@@ -82,12 +120,6 @@ app.get('/users/:id', async (req, res) => {
 });
 
 
-
-
-
-
-
-
 app.post('/users', async (req, res) => {
   const { name, email, senha, cargo } = req.body;
   if (!name || !email || !senha) {
@@ -96,43 +128,18 @@ app.post('/users', async (req, res) => {
 
 
 
-
-
-
-
-
   const existingUser = await database.findByEmail(email);
   if (existingUser) {
     return res.status(400).json({ msg: 'Email já está cadastrado!' });
   }
 
-
-
-
-
-
-
-
   await database.createUser({ name, email, senha, cargo });
   res.status(201).json({ msg: 'Usuário criado com sucesso!' });
 });
 
-
-
-
-
-
-
-
 app.put('/users/:id', async (req, res) => {
   const { name, email, senha, cargo } = req.body;
   const user = {};
-
-
-
-
-
-
 
 
   if (name) user.name = name;
@@ -143,19 +150,9 @@ app.put('/users/:id', async (req, res) => {
 
 
 
-
-
-
-
   await database.updateUser(req.params.id, user);
   res.status(204).send();
 });
-
-
-
-
-
-
 
 
 app.delete('/users/:id', async (req, res) => {
@@ -164,13 +161,8 @@ app.delete('/users/:id', async (req, res) => {
 });
 
 
-
-
-
-
-
 // EQUIPAMENTOS
-app.post('/equipamentos', async (req, res) => { 
+app.post('/equipamentos', async (req, res) => {
   const { nome_equipamento, modelo, local, status, fabricante, ano_aquisicao, descricao } = req.body;
   await database.createEquipamento({ nome_equipamento, modelo, local, status, fabricante, ano_aquisicao, descricao });
   res.status(201).send();
@@ -178,15 +170,10 @@ app.post('/equipamentos', async (req, res) => {
 
 
 
-
 app.get('/equipamentos', async (req, res) => {
   const equipamentos = await database.listEquipamentos();
   res.json(equipamentos);
 });
-
-
-
-
 
 
 app.get('/equipamentos', async (req, res) => {
@@ -201,22 +188,16 @@ app.get('/equipamentos', async (req, res) => {
 
 
 
-
-
 app.put('/equipamentos/:id', async (req, res) => {
   await database.updateEquipamento(req.params.id, req.body);
   res.status(204).send();
 });
 
 
-
-
 app.delete('/equipamentos/:id', async (req, res) => {
   await database.deleteEquipamento(req.params.id);
   res.status(204).send();
 });
-
-
 
 
 // SENSORES
@@ -227,13 +208,10 @@ app.post('/sensores', async (req, res) => {
 });
 
 
-
-
-app.get('/sensores', async (req, res) => { 
+app.get('/sensores', async (req, res) => {
   const sensores = await database.listSensores();
   res.json(sensores);
 });
-
 
 
 
@@ -243,14 +221,10 @@ app.get('/sensores/:id', async (req, res) => {
 });
 
 
-
-
 app.put('/sensores/:id', async (req, res) => {
   await database.updateSensor(req.params.id, req.body);
   res.status(204).send();
 });
-
-
 
 
 app.delete('/sensores/:id', async (req, res) => {
@@ -258,17 +232,19 @@ app.delete('/sensores/:id', async (req, res) => {
   res.status(204).send();
 });
 
-
 // LEITURAS
 // Endpoint para criar leitura
 app.post('/leituras', async (req, res) => {
   const { sensor_id, valor, timestamp } = req.body;
 
+
   console.log('Recebido no POST /leituras:', { sensor_id, valor, timestamp });
+
 
   if (!sensor_id || valor === undefined || valor === null) {
     return res.status(400).json({ msg: 'Campos obrigatórios ausentes ou inválidos' });
   }
+
 
   try {
     // Chamada sem falha, só com os campos que existem
@@ -280,14 +256,16 @@ app.post('/leituras', async (req, res) => {
   }
 });
 
+app.get('/leituras', async (req, res) => {
+  const leituras= await database.listLeituras();
+  res.json(leituras);
+});
 
 // MANUTENÇÕES
 app.post('/manutencoes', async (req, res) => {
   await database.createManutencao(req.body);
   res.status(201).send();
 });
-
-
 
 
 app.get('/manutencoes', async (req, res) => {
@@ -302,23 +280,27 @@ app.put('/manutencoes/:id', async (req, res) => {
 });
 
 
-
-
 app.delete('/manutencoes/:id', async (req, res) => {
   await database.deleteManutencao(req.params.id);
   res.status(204).send();
 });
 
 
+app.get('/manutencoes/status', async (req, res) => {
+  try {
+    const statusList = await database.listStatusManutencao();
+    res.json(statusList);
+  } catch (err) {
+    console.error('Erro ao buscar status de manutenção:', err);
+    res.status(500).json({ msg: 'Erro interno ao buscar status' });
+  }
+});
 
-
-// OS
+//OS
 app.post('/os', async (req, res) => {
   await database.createOS(req.body);
   res.status(201).send();
 });
-
-
 
 
 app.get('/os', async (req, res) => {
@@ -326,28 +308,40 @@ app.get('/os', async (req, res) => {
   res.json(ordens);
 });
 
-
-
-
-app.get('/os/:id', async (req, res) => {
-  const ordem = await database.getOSById(req.params.id);
-  res.json(ordem);
+app.get('/os/quantidade', async (req, res) => {
+  try {
+    const dados = await database.getQuantidadeOrdensPorData();
+    res.json(dados);
+  } catch (err) {
+    console.error('Erro ao buscar quantidades de ordens:', err);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
 });
 
-
-
+app.get('/os/quantidade-por-status', async (req, res) => {
+  try {
+    const dados = await database.getQuantidadeOrdensPorStatus();
+    res.json(dados);
+  } catch (err) {
+    console.error('Erro ao buscar quantidade por status:', err);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
+});
 
 app.put('/os/:id', async (req, res) => {
   await database.updateOS(req.params.id, req.body);
   res.status(204).send();
 });
 
-
-
-
 app.delete('/os/:id', async (req, res) => {
   await database.deleteOS(req.params.id);
   res.status(204).send();
+});
+
+
+app.get('/os/:id', async (req, res) => {
+  const ordem = await database.getOSById(req.params.id);
+  res.json(ordem);
 });
 
 
@@ -362,10 +356,18 @@ app.get('/alertas', async (req, res) => {
 
 
 
+
+
+
+
 app.post('/alertas', async (req, res) => {
   await database.createAlerta(req.body);
   res.status(201).send();
 });
+
+
+
+
 
 
 
@@ -378,6 +380,7 @@ app.delete('/alertas/:id', async (req, res) => {
 
 
 
+
 // RELATÓRIOS
 app.get('/relatorios', async (req, res) => {
   const relatorios = await database.listRelatorios();
@@ -386,15 +389,10 @@ app.get('/relatorios', async (req, res) => {
 
 
 
-
 app.post('/relatorios', async (req, res) => {
   await database.gerarRelatorio(req.body);
   res.status(201).send();
 })
-
-
-
-
 
 
 app.post('/agendamentos', async (req, res) => {
@@ -409,7 +407,6 @@ app.post('/agendamentos', async (req, res) => {
 
 
 
-
   try {
     await database.createAgendamento({ equipamento_id, data_agendada, status, responsavel, observacoes });
     res.status(201).json({ msg: 'Agendamento criado com sucesso!' });
@@ -418,7 +415,6 @@ app.post('/agendamentos', async (req, res) => {
     res.status(500).json({ msg: 'Erro interno ao agendar manutenção.' });
   }
 });
-
 
 
 
@@ -437,7 +433,9 @@ app.get('/agendamentos', async (req, res) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const pyPath = path.join(__dirname, 'prevent', 'analise.py');
+
 
 // Executa uma vez na inicialização
 const pyProcess = spawn('python', [pyPath]);
@@ -450,6 +448,7 @@ pyProcess.stderr.on('data', (data) => {
 pyProcess.on('close', (code) => {
   console.log(`processo python finalizado com código ${code}`);
 });
+
 
 // Agendamento a cada minuto
 cron.schedule('*/1 * * * *', () => {
@@ -466,6 +465,26 @@ cron.schedule('*/1 * * * *', () => {
   });
 });
 
+
+//INDICADORES DA DASHBOARD
+app.get('/dashboard/indicadores', async (req, res) => {
+  try {
+    const totalAnalises = await database.countAnalises();
+    const boas = await database.countAnalisesByResultado(0);
+    const falhas = await database.countAnalisesByResultado(1);
+    const mtbf = await database.calcularMTBF();
+
+    res.json({
+      total: totalAnalises,
+      bons: boas,
+      risco: falhas,
+      mtbf: mtbf // número ou null
+    });
+  } catch (err) {
+    console.error("Erro ao buscar indicadores:", err);
+    res.status(500).json({ erro: "Erro ao buscar indicadores" });
+  }
+});
 
 
 // START
