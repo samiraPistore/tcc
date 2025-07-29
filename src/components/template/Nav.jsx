@@ -16,7 +16,11 @@ const Nav = ({ handleLogout }) => (
             <Link to="/agenda-manutencao">
                 <i className="fa fa-calendar-check-o"></i> Agendamento de Manutenção
             </Link>
-            
+
+            <Link to="/historico">
+                <i className="fa fa-history"></i> Histórico de Manutenção
+            </Link>
+
             <Link to="/alertas">
                 <i className="fa fa-bell"></i> Alertas e Notificações
             </Link>
@@ -25,10 +29,6 @@ const Nav = ({ handleLogout }) => (
                 <i className="fa fa-line-chart"></i> Previsões de Falha
             </Link>
             
-            <Link to="/historico">
-                <i className="fa fa-history"></i> Histórico de Manutenção
-            </Link>
-
             <Link to="/relatorios">
                 <i className="fa fa-bar-chart"></i> Relatórios e Análises
             </Link>

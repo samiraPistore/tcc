@@ -1,0 +1,15 @@
+.grafico-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.grafico-titulo {
+  font-weight: bold;
+  font-size: 18px;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}

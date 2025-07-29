@@ -1,0 +1,93 @@
+.alertas-container {
+  padding: 30px;
+  font-family: sans-serif;
+  background-color: #f4f6fa;
+  min-height: 100vh;
+}
+
+.filtros-alertas {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.filtros-alertas select,
+.filtros-alertas button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  background-color: white;
+}
+
+.btn-filtrar {
+  background-color: #1a1a6b;
+  color: white;
+  border: none;
+}
+
+.btn-historico {
+  background-color: white;
+  border: 1px solid #1a1a6b;
+}
+
+.lista-alertas {
+   max-height: 800px;  /* ou ajuste conforme seu layout */
+  overflow-y: auto;
+  padding-right: 8px;  /* opcional: espaço pro scroll */
+}
+
+.cartao-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.icone-alerta {
+  width: 40px;
+  height: 40px;
+}
+
+.titulo-alerta {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #1a1a6b;
+}
+
+.mensagem-alerta {
+  margin: 2px 0 0;
+  color: #333;
+}
+
+.emoji-alerta {
+  font-size: 36px;
+  margin-right: 12px;
+}
+
+.notificacao-topo {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffe6e6;
+  color: #990000;
+  padding: 12px 20px;
+  border: 1px solid #cc0000;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-weight: bold;
+  z-index: 1000;
+  animation: fadein 0.3s ease;
+}
+
+@keyframes fadein {
+  from { opacity: 0; top: 0px; }
+  to { opacity: 1; top: 20px; }
+}

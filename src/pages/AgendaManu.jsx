@@ -1,98 +1,81 @@
-import React, { useState, useEffect } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import './AgendaManu.css';
+// Importações de bibliotecas e estilos
+import React, { useState, useEffect } from 'react'; // React e hooks
+import Calendar from 'react-calendar'; // Componente de calendário
+import 'react-calendar/dist/Calendar.css'; // Estilo do calendário
+import './AgendaManu.css'; // Estilo próprio da página
 
+// Componente principal
 const AgendaManu = () => {
-  const [nomeEquipamento, setNomeEquipamento] = useState('');
+  // Estado para armazenar os equipamentos disponíveis
   const [equipamentosDisponiveis, setEquipamentosDisponiveis] = useState([]);
+
+  // Estado para armazenar os usuários com cargo de técnico
+  const [tecnicos, setTecnicos] = useState([]);
+
+  // Estado do formulário de agendamento
   const [form, setForm] = useState({
     equipamentoId: '',
-    equipamentoNome: '',
     data: '',
     status: '',
     tecnico: '',
     descricao: ''
   });
+
+  // Estado da data selecionada no calendário
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
+
+  // Estado para exibir loading enquanto envia dados
   const [loading, setLoading] = useState(false);
 
+  // useEffect para carregar os dados do backend ao montar o componente
   useEffect(() => {
-    async function carregarEquipamentos() {
+    async function carregarDados() {
       try {
-        const response = await fetch('http://localhost:3010/equipamentos');
-        if (!response.ok) throw new Error('Erro ao carregar equipamentos');
-        const data = await response.json();
-        setEquipamentosDisponiveis(data);
+        // Requisições paralelas para pegar equipamentos e usuários
+        const [resEquipamentos, resUsuarios] = await Promise.all([
+          fetch('http://localhost:3010/equipamentos'),
+          fetch('http://localhost:3010/users')
+        ]);
+
+        // Se alguma das respostas falhar, lança erro
+        if (!resEquipamentos.ok || !resUsuarios.ok) throw new Error('Erro ao carregar dados');
+
+        // Converte as respostas em JSON
+        const equipamentos = await resEquipamentos.json();
+        const usuarios = await resUsuarios.json();
+
+        // Filtra apenas usuários com cargo 'tecnico'
+        const tecnicosFiltrados = usuarios.filter(u => u.cargo?.toLowerCase() === 'tecnico');
+
+        // Atualiza os estados
+        setEquipamentosDisponiveis(equipamentos);
+        setTecnicos(tecnicosFiltrados);
       } catch (error) {
-        console.error('Erro ao carregar equipamentos:', error);
+        console.error('Erro ao carregar dados:', error);
       }
     }
 
-    carregarEquipamentos();
-  }, []);
+    carregarDados(); // Chama a função ao montar o componente
+  }, []); // Executa apenas uma vez (componenteDidMount)
 
-  const buscarEquipamento = async () => {
-    if (!nomeEquipamento.trim()) {
-      alert('Digite ou selecione o nome do equipamento');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const url = `http://localhost:3010/equipamentos?nome=${encodeURIComponent(nomeEquipamento)}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-      const equipamentos = await response.json();
-
-      if (!Array.isArray(equipamentos) || equipamentos.length === 0) {
-        alert('Nenhum equipamento encontrado');
-        return;
-      }
-
-      const equipamentoEncontrado = equipamentos.find(
-        e => e.nome.toLowerCase() === nomeEquipamento.trim().toLowerCase()
-      );
-
-      if (!equipamentoEncontrado) {
-        alert('Nenhum equipamento encontrado com nome exato');
-        return;
-      }
-
-      setForm({
-        equipamentoId: equipamentoEncontrado.id || '',
-        equipamentoNome: equipamentoEncontrado.nome || '',
-        status: equipamentoEncontrado.status || '',
-        tecnico: equipamentoEncontrado.tecnico || '',
-        descricao: equipamentoEncontrado.descricao || '',
-        data: equipamentoEncontrado.data || ''
-      });
-
-      if (equipamentoEncontrado.data) {
-        setDataSelecionada(new Date(equipamentoEncontrado.data));
-      }
-    } catch (error) {
-      console.error('Erro ao buscar equipamento:', error);
-      alert('Erro ao buscar equipamento. Veja console para detalhes.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Atualiza o estado do formulário ao alterar campos de texto/select
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  // Atualiza o estado da data ao selecionar no calendário
   const handleDateChange = (date) => {
     setDataSelecionada(date);
-    const dataFormatada = date.toISOString().split('T')[0];
+    const dataFormatada = date.toISOString().split('T')[0]; // Formata para yyyy-mm-dd
     setForm(prev => ({ ...prev, data: dataFormatada }));
   };
 
+  // Envia o formulário para o backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Verifica se o usuário está autenticado
     const token = localStorage.getItem('token');
     if (!token) {
       alert('Você precisa estar logado para agendar.');
@@ -100,120 +83,122 @@ const AgendaManu = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3010/agendamentos', {
+      setLoading(true); // Ativa o loading
+      const response = await fetch('http://localhost:3010/manutencao', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // Envia o token no cabeçalho
         },
         body: JSON.stringify({
           equipamento_id: form.equipamentoId,
           data_agendada: form.data,
           status: form.status,
-          responsavel: form.tecnico,
-          observacoes: form.descricao,
+          tecnico: form.tecnico,
+          descricao: form.descricao,
         }),
       });
 
+      // Se o envio for bem-sucedido
       if (response.ok) {
         alert('Manutenção agendada com sucesso!');
+        // Reseta o formulário
         setForm({
           equipamentoId: '',
-          equipamentoNome: '',
           data: '',
           status: '',
           tecnico: '',
           descricao: ''
         });
-        setNomeEquipamento('');
       } else {
+        // Exibe mensagem de erro vinda do servidor
         const data = await response.json();
         alert(`Erro: ${data.msg || 'Não foi possível agendar'}`);
       }
     } catch (error) {
       console.error('Erro ao enviar agendamento:', error);
       alert('Erro ao enviar agendamento, tente novamente.');
+    } finally {
+      setLoading(false); // Desativa o loading
     }
   };
 
+  // JSX retornado (interface do usuário)
   return (
     <div className="agenda-container">
+      {/* Calendário de seleção de data */}
       <div className="calendario">
         <Calendar value={dataSelecionada} onChange={handleDateChange} />
       </div>
 
+      {/* Formulário de agendamento */}
       <form onSubmit={handleSubmit} className="formulario">
         <h2>Nova Manutenção</h2>
 
+        {/* Seleção de equipamento */}
         <label>
-          Nome do Equipamento:
+          Equipamento:
           <select
-            value={nomeEquipamento}
-            onChange={(e) => setNomeEquipamento(e.target.value)}
+            value={form.equipamentoId}
+            onChange={(e) => setForm(prev => ({ ...prev, equipamentoId: e.target.value }))}
           >
             <option value="">Selecione um equipamento</option>
             {equipamentosDisponiveis.map(eq => (
-              <option key={eq.id} value={eq.nome}>
-                {eq.nome}
+              <option key={eq.id} value={eq.id}>
+                {eq.nome_equipamento}
               </option>
             ))}
           </select>
-
-          <button
-            type="button"
-            onClick={buscarEquipamento}
-            disabled={loading}
-            style={{ marginLeft: '10px', padding: '6px 12px' }}
-          >
-            {loading ? 'Buscando...' : 'Buscar'}
-          </button>
         </label>
 
-        <label>
-          Selecione o Equipamento:
-          <select
-            value={form.equipamentoId}
-            onChange={(e) => {
-              const id = e.target.value;
-              const equipamento = equipamentosDisponiveis.find(eq => eq.id === parseInt(id));
-              setForm(prev => ({
-                ...prev,
-                equipamentoId: id,
-                equipamentoNome: equipamento?.nome || ''
-              }));
-            }}
-          >
-            <option value="">Selecione um equipamento</option>
-            {equipamentosDisponiveis.map(eq => (
-              <option key={eq.id} value={eq.id}>{eq.nome}</option>
-            ))}
-          </select>
-        </label>
-
+        {/* Campo de data */}
         <label>
           Data:
           <input type="date" name="data" value={form.data} onChange={handleChange} />
         </label>
 
+        {/* Seleção de status */}
         <label>
           Status:
-          <input type="text" name="status" value={form.status} onChange={handleChange} />
+          <select name="status" value={form.status} onChange={handleChange}>
+            <option value="">Selecione o status</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Em Andamento">Em Andamento</option>
+          </select>
         </label>
 
+        {/* Seleção de técnico responsável */}
         <label>
           Técnico:
-          <input type="text" name="tecnico" value={form.tecnico} onChange={handleChange} />
+          <select name="tecnico" value={form.tecnico} onChange={handleChange}>
+            <option value="">Selecione um técnico</option>
+            {tecnicos.map(tecnico => (
+              <option key={tecnico.id} value={tecnico.name}>
+                {tecnico.name}
+              </option>
+            ))}
+          </select>
         </label>
 
+        {/* Campo de descrição opcional */}
         <label>
           Descrição:
-          <textarea name="descricao" value={form.descricao} onChange={handleChange} placeholder="(opcional)" />
+          <textarea
+            name="descricao"
+            value={form.descricao}
+            onChange={handleChange}
+            placeholder="(opcional)"
+          />
         </label>
 
-        <button type="submit">Salvar</button>
+        {/* Botão de envio */}
+        <button type="submit" disabled={loading}>
+          {loading ? 'Salvando...' : 'Salvar'}
+        </button>
       </form>
     </div>
   );
 };
 
+// Exporta o componente
 export default AgendaManu;
