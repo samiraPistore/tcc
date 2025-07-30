@@ -3,9 +3,10 @@ import './RelatorioAn.css';
 import GraficoAnalise from '../components/charts/Graficos';
 import GraficoOrdensServico from '../components/charts/GraficoLinha';
 import GraficoPizzaOrdens from '../components/charts/GraficoOs';
+
 const RelatorioAn = () => {
   return (
-    <div className="maintenance-container">
+    <div className="relatorio-container">
       <h2>Relatórios e Análises</h2>
 
       {/* Filtros */}
@@ -34,24 +35,22 @@ const RelatorioAn = () => {
         <button>Gerar relatórios</button>
       </div>
 
-      {/* Gráfico - Status dos Equipamentos */}
-      <section className="grafico-analise-section">
-        <h2 style={{ textAlign: 'center', marginTop: '30px' }}>Status dos Equipamentos</h2>
-        <GraficoAnalise />
-      </section>
+      {/* Gráficos em layout responsivo */}
+      <div className="graficos-grid">
+        <div className="grafico-item">
+          <GraficoPizzaOrdens />
+        </div>
 
-      {/* Gráfico - Ordens de Serviço */}
-      <section className="grafico-analise-section">
-        <GraficoPizzaOrdens/>
-      </section>
+        <div className="grafico-item">
+          <GraficoAnalise />
+        </div>
 
-
-      <section className="grafico-analise-section">
-        <GraficoOrdensServico/>
-      </section>
+        <div className="grafico-item">
+          <GraficoOrdensServico />
+        </div>
+      </div>
     </div>
-
-  )
+  );
 };
 
 export default RelatorioAn;

@@ -22,6 +22,12 @@ body {
   margin: 0 auto;
 }
 
+.scroll-container {
+  max-height: calc(100vh - 120px); /* Ajuste se o cabeçalho for maior ou menor */
+  overflow-y: auto;
+  padding-right: 10px; /* espaço pra barra de rolagem */
+}
+
 /* Cartões */
 .dashboard-card {
   background-color: #fff;
@@ -63,17 +69,34 @@ body {
   font-weight: bold;
 }
 
-/* Seções extras */
-.extra-section {
+/* Layout do gráfico + cards ao lado */
+.grafico-e-cards {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
   padding: 20px;
   max-width: 1600px;
   margin: 0 auto;
 }
 
+.grafico-analise {
+  flex: 2;
+  min-width: 500px;
+  max-width: 900px;
+}
+
+.cards-laterais {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 250px;
+  max-width: 350px;
+}
+
+/* Estilo dos cards laterais */
 .alerta-container,
 .resumoManuten {
   background-color: #fff;
@@ -114,7 +137,16 @@ body {
   background-color: #339ab5;
 }
 
+/* Gráfico isolado (caso continue usando em outras páginas) */
+.grafico-analise-section {
+  max-width: 900px;
+  height: 650px;
+  margin: auto;
+  text-align: justify;
+  transform: translateY(-35px);
+}
 
+/* Responsividade */
 @media (max-width: 400px) {
   .dashboard-card,
   .alerta-container,
@@ -125,10 +157,10 @@ body {
   }
 }
 
-
 @media (max-width: 768px) {
   .dashboard-container,
-  .extra-section {
+  .extra-section,
+  .grafico-e-cards {
     flex-direction: column;
     align-items: center;
     padding: 10px;
@@ -136,12 +168,13 @@ body {
 
   .dashboard-card,
   .alerta-container,
-  .resumoManuten {
+  .resumoManuten,
+  .grafico-analise,
+  .cards-laterais {
     width: 100%;
     max-width: 95%;
   }
 }
-
 
 @media (max-width: 1024px) and (min-width: 769px) {
   .dashboard-card,
@@ -151,7 +184,6 @@ body {
   }
 }
 
-
 @media (min-width: 1025px) and (max-width: 1440px) {
   .dashboard-card,
   .alerta-container,
@@ -159,7 +191,6 @@ body {
     flex: 1 1 30%;
   }
 }
-
 
 @media (min-width: 1441px) {
   .dashboard-card,

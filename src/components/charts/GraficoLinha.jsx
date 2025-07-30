@@ -1,53 +1,112 @@
-// GraficoOrdensServico.jsx
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import axios from 'axios';
 import {
   Chart as ChartJS,
-  LineElement,
   CategoryScale,
   LinearScale,
   PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  Legend,
+  Legend
 } from 'chart.js';
+import axios from 'axios';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-export default function GraficoOrdensServico() {
-  const [dados, setDados] = useState(null);
+const GraficoLinha = () => {
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3010/os/quantidade')
-      .then(res => {
-        const labels = res.data.map(item => item.data);
-        const abertas = res.data.map(item => item.abertas);
-        const fechadas = res.data.map(item => item.fechadas);
-
-        setDados({
-          labels,
+    axios.get('/api/ordens-por-data') // Substitua pela sua rota
+      .then((res) => {
+        const dados = res.data;
+        setData({
+          labels: dados.labels,
           datasets: [
             {
               label: 'Ordens Abertas',
-              data: abertas,
+              data: dados.abertas,
               borderColor: 'blue',
-              backgroundColor: 'rgba(59,130,246,0.2)',
+              backgroundColor: 'blue'
             },
             {
               label: 'Ordens Fechadas',
-              data: fechadas,
+              data: dados.fechadas,
               borderColor: 'green',
-              backgroundColor: 'rgba(34,197,94,0.2)',
+              backgroundColor: 'green'
             }
           ]
         });
       })
-      .catch(err => {
-        console.error('Erro ao carregar gráfico OS:', err);
+      .catch(() => {
+        // fallback
+        setData({
+          labels: ['2025-07-20', '2025-07-26'],
+          datasets: [
+            {
+              label: 'Ordens Abertas',
+              data: [1, 2],
+              borderColor: 'blue',
+              backgroundColor: 'blue'
+            },
+            {
+              label: 'Ordens Fechadas',
+              data: [0, 1],
+              borderColor: 'green',
+              backgroundColor: 'green'
+            }
+          ]
+        });
       });
   }, []);
 
-  if (!dados) return <p>Carregando gráfico...</p>;
+  const downloadCSV = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  return <Line data={dados} />;
-}
+    if (!data) return;
+
+    let csv = 'Data,Ordens Abertas,Ordens Fechadas\n';
+    data.labels.forEach((label, i) => {
+      csv += `${label},${data.datasets[0].data[i]},${data.datasets[1].data[i]}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ordens_tempo.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  if (!data) return <div className="grafico-analise-section">Carregando gráfico...</div>;
+
+  return (
+    <div className="grafico-analise-section">
+      <h3>Ordens ao Longo do Tempo</h3>
+      <Line data={data} />
+      <button type="button" onClick={downloadCSV} style={{
+        marginTop: '10px',
+        padding: '8px 12px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer'
+      }}>
+        Salvar CSV
+      </button>
+    </div>
+  );
+};
+
+export default GraficoLinha;

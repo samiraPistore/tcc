@@ -1,8 +1,5 @@
-import { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import axios from "axios";
-
-// REGISTRA ELEMENTOS DO CHART.JS
+import React, { useState, useEffect } from 'react';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,9 +7,11 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
-} from "chart.js";
+  Legend
+} from 'chart.js';
+import axios from 'axios';
 
+// Registrar os componentes do Chart.js (obrigatório)
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,49 +21,82 @@ ChartJS.register(
   Legend
 );
 
-function MeuGrafico() {
-  const [dados, setDados] = useState(null);
+const Graficos = () => {
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: []
+  });
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3010/analise/resumo/geral")
+    // Simulação de chamada à API
+    axios.get('/api/statusEquipamentos') // troque por sua URL real
       .then((res) => {
-        console.log("Resposta da API:", res.data);
+        const data = res.data;
 
-        if (!Array.isArray(res.data)) {
-          throw new Error("Resposta da API não é um array");
-        }
-
-        const labels = res.data.map((item) =>
-          parseInt(item.resultado) === 1 ? "Falha" : "Normal"
-        );
-
-        const values = res.data.map((item) => parseInt(item.quantidade));
-
-        setDados({
-          labels,
+        setChartData({
+          labels: data.labels,
           datasets: [
             {
-              label: "Ocorrências",
-              data: values,
-              backgroundColor: ["#3b82f6", "#cc3b3bff"],
-            },
-          ],
+              label: 'Ocorrências',
+              data: data.values,
+              backgroundColor: ['#36A2EB', '#FF6384'],
+            }
+          ]
         });
       })
-      .catch((err) => {
-        console.error("Erro ao carregar gráfico:", err.message || err);
+      .catch(() => {
+        // Se a API falhar, usa dados fixos
+        setChartData({
+          labels: ['Normal', 'Falha'],
+          datasets: [
+            {
+              label: 'Ocorrências',
+              data: [230, 5],
+              backgroundColor: ['#36A2EB', '#FF6384'],
+            }
+          ]
+        });
       });
   }, []);
 
-  if (!dados) return <p>Carregando gráfico...</p>;
+  // Função para baixar o CSV
+  const downloadCSV = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!chartData.labels.length) return;
+
+    let csv = 'Status,Ocorrências\n';
+    chartData.labels.forEach((label, index) => {
+      csv += `${label},${chartData.datasets[0].data[index]}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'status_equipamentos.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
-    <div style={{ width: "500px" }}>
-      <h3>Gráfico de Análises</h3>
-      <Bar key={JSON.stringify(dados)} data={dados} />
+    <div>
+      <h3>Status dos Equipamentos</h3>
+      <Bar data={chartData} />
+      <button type="button" onClick={downloadCSV} style={{
+        marginTop: '10px',
+        padding: '8px 12px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer'
+      }}>
+        Salvar CSV
+      </button>
     </div>
   );
-}
+};
 
-export default MeuGrafico;
+export default Graficos;

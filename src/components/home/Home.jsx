@@ -68,8 +68,7 @@ const Home = () => {
           {
             icon: '%',
             iconLabel: 'Desempenho',
-            number:
-              typeof dados.mtbf === 'number' ? `${dados.mtbf.toFixed(2)}h` : 'N/A',
+            number: typeof dados.mtbf === 'number' ? `${dados.mtbf.toFixed(2)}h` : 'N/A',
             description: 'Desempenho geral (MTBF)',
             iconClass: 'blue',
           },
@@ -83,52 +82,54 @@ const Home = () => {
 
   return (
     <Main icon="home" title="DASHBOARD" subtitle="Manutenção Preditiva">
-      {loading ? (
-        <p style={{ textAlign: 'center' }}>Carregando indicadores...</p>
-      ) : (
-        <>
-          {/* Cards principais */}
-          <section className="dashboard-container">
-            {dashboardData.map(({ icon, iconLabel, number, description, iconClass }, index) => (
-              <article key={index} className="dashboard-card" aria-label={iconLabel}>
-                <div className={`dashboard-icon ${iconClass}`}>{icon}</div>
-                <div>
-                  <strong className="dashboard-number">{number}</strong>
-                  <p>{description}</p>
+      <div className="scroll-container">
+        {loading ? (
+          <p style={{ textAlign: 'center' }}>Carregando indicadores...</p>
+        ) : (
+          <>
+            {/* Cards principais */}
+            <section className="dashboard-container">
+              {dashboardData.map(({ icon, iconLabel, number, description, iconClass }, index) => (
+                <article key={index} className="dashboard-card" aria-label={iconLabel}>
+                  <div className={`dashboard-icon ${iconClass}`}>{icon}</div>
+                  <div>
+                    <strong className="dashboard-number">{number}</strong>
+                    <p>{description}</p>
+                  </div>
+                </article>
+              ))}
+            </section>
+
+            {/* Gráfico + Cards Laterais */}
+            <section className="grafico-e-cards">
+              <div className="grafico-analise">
+                <GraficoAnalise />
+              </div>
+
+              <div className="cards-laterais">
+                <div className="alerta-container">
+                  <h2 className="alerta-titulo">Alertas</h2>
+                  <p className="alerta-texto">Falha detectada em Equipamento C</p>
+                  <p className="alerta-texto">Anomalia detectada em Equipamento C</p>
+                  <p className="alerta-texto">Falha detectada em Equipamento C</p>
+                  <button className="botao" onClick={() => navigate('/alertas')}>
+                    Ver Mais
+                  </button>
                 </div>
-              </article>
-            ))}
-          </section>
 
-          {/* Gráfico */}
-          <section className="grafico-analise-section">
-            <h2 style={{ textAlign: 'center', marginTop: '30px' }}>Status dos Equipamentos</h2>
-            <GraficoAnalise />
-          </section>
-
-          {/* Alertas e Manutenções */}
-          <div className="extra-section">
-            <div className="alerta-container">
-              <h2 className="alerta-titulo">Alertas</h2>
-              <p className="alerta-texto">Falha detectada em Equipamento C</p>
-              <p className="alerta-texto">Anomalia detectada em Equipamento C</p>
-              <p className="alerta-texto">Falha detectada em Equipamento C</p>
-              <button className="botao" onClick={() => navigate('/alertas')}>
-                Ver Mais
-              </button>
-            </div>
-
-            <div className="resumoManuten">
-              <h2 className="resumoManutenc">Resumo Manutenções</h2>
-              <p className="manuten">Manutenção A pendente</p>
-              <p className="manuten">Manutenção A agendada</p>
-              <p className="manuten">Manutenção A agendada</p>
-              <p className="manuten">Manutenção A agendada</p>
-              <p className="manuten">Manutenção A agendada</p>
-            </div>
-          </div>
-        </>
-      )}
+                <div className="resumoManuten">
+                  <h2 className="resumoManutenc">Resumo Manutenções</h2>
+                  <p className="manuten">Manutenção A pendente</p>
+                  <p className="manuten">Manutenção A agendada</p>
+                  <p className="manuten">Manutenção A agendada</p>
+                  <p className="manuten">Manutenção A agendada</p>
+                  <p className="manuten">Manutenção A agendada</p>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+      </div>
     </Main>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Config.css';
 import { useNavigate } from 'react-router-dom';
 import Main from '../components/template/Main';
@@ -6,19 +6,36 @@ import Main from '../components/template/Main';
 function Config() {
   const navigate = useNavigate();
 
-  const [emailNotif, setEmailNotif] = useState(true);
-  const [smsNotif, setSmsNotif] = useState(false);
-  const [pushNotif, setPushNotif] = useState(true);
+  const [emailNotif, setEmailNotif] = useState(null);
+  const [smsNotif, setSmsNotif] = useState(null);
+  const [pushNotif, setPushNotif] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState('');
 
-  const irParaGestaoUsuarios = () => {
-    navigate('/gestao-usuarios');
-  };
+  useEffect(() => {
+    // Buscar configurações ao montar o componente
+    async function fetchConfig() {
+      try {
+        const res = await fetch('http://localhost:3010/configuracoes');
+        if (res.ok) {
+          const data = await res.json();
+          setEmailNotif(data.email_notif);
+          setSmsNotif(data.sms_notif);
+          setPushNotif(data.push_notif);
+        } else {
+          setMsg('Não foi possível carregar as configurações.');
+        }
+      } catch (err) {
+        setMsg('Erro ao comunicar com o servidor.');
+      }
+    }
 
-  const irParaIntegracoesDoSistema = () => {
-    navigate('/integraco');
-  };
+    fetchConfig();
+  }, []);
 
   const salvarPreferencias = async () => {
+    setLoading(true);
+    setMsg('');
     try {
       const resposta = await fetch('http://localhost:3010/configuracoes', {
         method: 'POST',
@@ -34,13 +51,14 @@ function Config() {
 
       const dados = await resposta.json();
       if (resposta.ok) {
-        alert('✅ Preferências salvas com sucesso!');
+        setMsg('✅ Preferências salvas com sucesso!');
       } else {
-        alert('❌ Erro ao salvar: ' + dados.msg);
+        setMsg('❌ Erro ao salvar: ' + dados.msg);
       }
     } catch (err) {
-      console.error('Erro ao salvar preferências:', err);
-      alert('❌ Falha na comunicação com o servidor.');
+      setMsg('❌ Falha na comunicação com o servidor.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,9 +67,9 @@ function Config() {
       <div className="config-container">
         <div className="config-section"></div>
         <h3>Usuários e Permissões</h3>
-        <button onClick={irParaGestaoUsuarios}>Gestão Usuários</button>
+        <button onClick={() => navigate('/gestao-usuarios')}>Gestão Usuários</button>
 
-        <h3 className='notificacoes'>Notificações</h3>
+        <h3 className="notificacoes">Notificações</h3>
         <div className="switch-row">
           <div className="switch">
             <span>Notificação por E-mail</span>
@@ -83,7 +101,7 @@ function Config() {
 
         <div className="config-section"></div>
         <h3>Integrações do Sistema</h3>
-        <button onClick={irParaIntegracoesDoSistema}>Integrações do Sistema</button>
+        <button onClick={() => navigate('/integraco')}>Integrações do Sistema</button>
 
         <div className="config-section"></div>
         <h3>Análise Preditiva</h3>
@@ -91,7 +109,15 @@ function Config() {
         <div className="config-section"></div>
         <h3>Segurança</h3>
 
-        <button className="btn-salvar" onClick={salvarPreferencias}>Salvar Alterações</button>
+        <button
+          className="btn-salvar"
+          onClick={salvarPreferencias}
+          disabled={loading}
+        >
+          {loading ? 'Salvando...' : 'Salvar Alterações'}
+        </button>
+
+        {msg && <p className="mensagem-feedback">{msg}</p>}
       </div>
     </Main>
   );
