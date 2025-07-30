@@ -32,14 +32,29 @@ const database = new DatabasePostgres();
 app.use('/analise', analiseRouter);
 
 
-// Exemplo de rota no seu servidor Express
-app.post('/configuracoes', (req, res) => {
+// SALVAR configurações (email, sms, push)
+app.post('/configuracoes', async (req, res) => {
   const { emailNotif, smsNotif, pushNotif } = req.body;
-  console.log('Preferências salvas:', { emailNotif, smsNotif, pushNotif });
-
-  // Aqui você poderia salvar no banco, se quiser
-  res.status(200).json({ msg: 'Preferências salvas com sucesso!' });
+  try {
+    await database.salvarConfiguracoes({ emailNotif, smsNotif, pushNotif });
+    res.status(200).json({ msg: 'Preferências salvas com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao salvar configurações:', err);
+    res.status(500).json({ msg: 'Erro ao salvar configurações' });
+  }
 });
+
+// OBTER configurações atuais
+app.get('/configuracoes', async (req, res) => {
+  try {
+    const configuracoes = await database.obterConfiguracoes();
+    res.json(configuracoes);
+  } catch (err) {
+    console.error('Erro ao obter configurações:', err);
+    res.status(500).json({ msg: 'Erro ao obter configurações' });
+  }
+});
+
 
 // Cadastro
 app.post('/auth/register', async (req, res) => {
@@ -485,6 +500,7 @@ app.get('/dashboard/indicadores', async (req, res) => {
     res.status(500).json({ erro: "Erro ao buscar indicadores" });
   }
 });
+
 
 
 // START

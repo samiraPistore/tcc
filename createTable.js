@@ -110,7 +110,7 @@ await sql`
     temperatura DECIMAL,
     vibracao DECIMAL,
     ruido DECIMAL,
-    resultado BOOLEAN, -- 0 ou 1
+    resultado BOOLEAN,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `
@@ -136,3 +136,13 @@ CREATE TABLE IF NOT EXISTS previsoes_manutencao (
   data_geracao TIMESTAMP DEFAULT NOW()
 );
 `
+
+// Tabela de configurações (global ou para um único usuário)
+await sql`
+  CREATE TABLE IF NOT EXISTS configuracoes (
+    id SERIAL PRIMARY KEY,
+    email_notif BOOLEAN DEFAULT true,
+    sms_notif BOOLEAN DEFAULT false,
+    push_notif BOOLEAN DEFAULT true
+  );
+`;

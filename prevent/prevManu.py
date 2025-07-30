@@ -44,4 +44,4 @@ print("MAE:", mean_absolute_error(y_test, y_pred))
 print("R²:", r2_score(y_test, y_pred))
 
 # Salvar modelo
-dump(modelo, 'modelo_regressao_manutencao.joblib')
+dump(modelo, 'modeloRegreMan.pkl')

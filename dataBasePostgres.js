@@ -139,7 +139,7 @@ export class DatabasePostgres {
 
   async createLeitura(leitura) {
     const id = randomUUID();
-    const { sensor_id, valor, timestamp, falha } = leitura;
+    const { sensor_id, valor, timestamp } = leitura;
     await sql`
       INSERT INTO leituras (id, sensor_id, valor, timestamp)
       VALUES (${id}, ${sensor_id}, ${valor}, ${timestamp})
@@ -147,7 +147,6 @@ export class DatabasePostgres {
   }
 
   // MANUTENÇÃO
-  // Aqui a versão única da listManutencoes com JOIN para nome do equipamento e nome do responsável
   async listManutencoes() {
     return await sql`
       SELECT m.*, e.nome_equipamento, u.name AS nome_responsavel
@@ -251,7 +250,8 @@ export class DatabasePostgres {
   async listRelatorios() {
     return await sql`SELECT * FROM relatorios`;
   }
-async getQuantidadeOrdensPorData() {
+
+  async getQuantidadeOrdensPorData() {
     return await sql`
       SELECT 
         DATE(data_abertura) AS data,
@@ -261,19 +261,17 @@ async getQuantidadeOrdensPorData() {
       GROUP BY DATE(data_abertura)
       ORDER BY DATE(data_abertura);
     `;
+  }
 
-}
-
-async getQuantidadeOrdensPorStatus() {
-  return await sql`
-    SELECT 
-      status,
-      COUNT(*) AS quantidade
-    FROM os
-    GROUP BY status;
-  `;
-}
-
+  async getQuantidadeOrdensPorStatus() {
+    return await sql`
+      SELECT 
+        status,
+        COUNT(*) AS quantidade
+      FROM os
+      GROUP BY status;
+    `;
+  }
 
   // AGENDAMENTOS
   async createAgendamento({ equipamento_id, data_agendada, status, responsavel, observacoes }) {
@@ -284,13 +282,18 @@ async getQuantidadeOrdensPorStatus() {
     `;
   }
 
+  async listAgendamentos() {
+    return await sql`SELECT * FROM agendamentos ORDER BY data_agendada DESC`;
+  }
+
   // ANALISES
+  // Ajustado para as colunas existentes da tabela 'analises'
   async criarAnalise(analise) {
     const id = randomUUID();
-    const { equipamento_id, resultado, descricao, gravidade, data } = analise;
+    const { equipamento_id, temperatura, vibracao, ruido, resultado, timestamp } = analise;
     await sql`
-      INSERT INTO analises (id, equipamento_id, resultado, descricao, gravidade, data)
-      VALUES (${id}, ${equipamento_id}, ${resultado}, ${descricao}, ${gravidade}, ${data})
+      INSERT INTO analises (id, equipamento_id, temperatura, vibracao, ruido, resultado, timestamp)
+      VALUES (${id}, ${equipamento_id}, ${temperatura}, ${vibracao}, ${ruido}, ${resultado}, ${timestamp})
     `;
   }
 
@@ -304,59 +307,77 @@ async getQuantidadeOrdensPorStatus() {
     return parseInt(result[0].count);
   }
 
+  async calcularMTBF() {
+    const result = await sql`
+      SELECT equipamento_id, data_manutencao
+      FROM manutencao
+      WHERE status = 'concluído'
+      ORDER BY equipamento_id, data_manutencao
+    `;
 
+    const dados = result; // Ajuste se usar outra lib
 
-async calcularMTBF() {
-  const result = await sql`
-    SELECT equipamento_id, data_manutencao
-    FROM manutencao
-    WHERE status = 'concluído'
-    ORDER BY equipamento_id, data_manutencao
-  `;
+    const porEquipamento = {};
 
-  // Dependendo da biblioteca sql, ajuste para pegar as linhas corretamente
-  const dados = result.rows || result;
+    dados.forEach(({ equipamento_id, data_manutencao }) => {
+      if (!porEquipamento[equipamento_id]) {
+        porEquipamento[equipamento_id] = [];
+      }
+      porEquipamento[equipamento_id].push(new Date(data_manutencao));
+    });
 
-  const porEquipamento = {};
+    const tempos = [];
 
-  dados.forEach(({ equipamento_id, data_manutencao }) => {
-    if (!porEquipamento[equipamento_id]) {
-      porEquipamento[equipamento_id] = [];
+    for (const datas of Object.values(porEquipamento)) {
+      datas.sort((a, b) => a - b);
+
+      for (let i = 1; i < datas.length; i++) {
+        const diffMs = datas[i] - datas[i - 1];
+        const diffHoras = diffMs / (1000 * 60 * 60);
+        tempos.push(diffHoras);
+      }
     }
-    porEquipamento[equipamento_id].push(new Date(data_manutencao));
-  });
 
-  const tempos = [];
+    const totalHoras = tempos.reduce((acc, t) => acc + t, 0);
+    const totalFalhas = tempos.length;
 
-  for (const datas of Object.values(porEquipamento)) {
-    datas.sort((a, b) => a - b);
+    if (totalFalhas === 0) return null;
 
-    for (let i = 1; i < datas.length; i++) {
-      const diffMs = datas[i] - datas[i - 1];
-      const diffHoras = diffMs / (1000 * 60 * 60);
-      tempos.push(diffHoras);
+    return totalHoras / totalFalhas;
+  }
+
+  async salvarPrevisaoManutencao({ id, equipamento_id, dias, data_prevista, modelo }) {
+    await sql`
+      INSERT INTO previsoes_manutencao (id, equipamento_id, dias_ate_manutencao, data_prevista, modelo_usado)
+      VALUES (${id}, ${equipamento_id}, ${dias}, ${data_prevista}, ${modelo})
+      ON CONFLICT (equipamento_id) DO UPDATE SET
+        dias_ate_manutencao = EXCLUDED.dias_ate_manutencao,
+        data_prevista = EXCLUDED.data_prevista,
+        modelo_usado = EXCLUDED.modelo_usado,
+        data_geracao = NOW()
+    `;
+  }
+
+  // CONFIGURAÇÕES
+  async salvarConfiguracoes({ emailNotif, smsNotif, pushNotif }) {
+    const existe = await sql`SELECT id FROM configuracoes LIMIT 1`;
+
+    if (existe.length > 0) {
+      await sql`
+        UPDATE configuracoes
+        SET email_notif = ${emailNotif}, sms_notif = ${smsNotif}, push_notif = ${pushNotif}
+        WHERE id = ${existe[0].id}
+      `;
+    } else {
+      await sql`
+        INSERT INTO configuracoes (email_notif, sms_notif, push_notif)
+        VALUES (${emailNotif}, ${smsNotif}, ${pushNotif})
+      `;
     }
   }
 
-  const totalHoras = tempos.reduce((acc, t) => acc + t, 0);
-  const totalFalhas = tempos.length;
-
-  if (totalFalhas === 0) return null;
-
-  return totalHoras / totalFalhas; // Retorna número (não string)
-}
-
-async salvarPrevisaoManutencao({ id, equipamento_id, dias, data_prevista, modelo }) {
-  await this.db.query(sql`
-    INSERT INTO previsoes_manutencao (id, equipamento_id, dias_ate_manutencao, data_prevista, modelo_usado)
-    VALUES (${id}, ${equipamento_id}, ${dias}, ${data_prevista}, ${modelo})
-    ON CONFLICT (equipamento_id) DO UPDATE SET
-      dias_ate_manutencao = EXCLUDED.dias_ate_manutencao,
-      data_prevista = EXCLUDED.data_prevista,
-      modelo_usado = EXCLUDED.modelo_usado,
-      data_geracao = NOW()
-  `);
-}
-
-
+  async obterConfiguracoes() {
+    const resultado = await sql`SELECT * FROM configuracoes LIMIT 1`;
+    return resultado[0] ?? { email_notif: true, sms_notif: false, push_notif: true };
+  }
 }

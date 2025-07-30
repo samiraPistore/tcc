@@ -27,7 +27,7 @@ Content-Type: application/json
 DELETE http://localhost:3010/users/94d860d4-ccbe-48c2-b230-6ffc798a6536
 
 ### Enviar
-GET http://localhost:3010/equipamentos
+GET http://localhost:3010/manutencoes
 
 
 ### CRIAR usuário
