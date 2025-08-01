@@ -10,8 +10,7 @@ import cron from 'node-cron';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-
+import predicaoRouter from './routes/predicao.js';
 
 
 
@@ -28,6 +27,7 @@ const database = new DatabasePostgres();
 
 
 
+app.use('/prever-proxima', predicaoRouter);
 
 app.use('/analise', analiseRouter);
 
@@ -311,6 +311,16 @@ app.get('/manutencoes/status', async (req, res) => {
   }
 });
 
+app.get('/resumo-manutencoes', async (req, res) => {
+  try {
+    const resumo = await database.resumoManutencoes();
+    res.json(resumo);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro no servidor' });
+  }
+});
+
+
 //OS
 app.post('/os', async (req, res) => {
   await database.createOS(req.body);
@@ -487,13 +497,15 @@ app.get('/dashboard/indicadores', async (req, res) => {
     const totalAnalises = await database.countAnalises();
     const boas = await database.countAnalisesByResultado(0);
     const falhas = await database.countAnalisesByResultado(1);
-    const mtbf = await database.calcularMTBF();
+    const intervaloPreventivo = await database.calcularIntervaloPreventivo();
+
 
     res.json({
       total: totalAnalises,
       bons: boas,
       risco: falhas,
-      mtbf: mtbf // número ou null
+      intervaloPreventivo: intervaloPreventivo
+
     });
   } catch (err) {
     console.error("Erro ao buscar indicadores:", err);
@@ -507,3 +519,5 @@ app.get('/dashboard/indicadores', async (req, res) => {
 app.listen(process.env.PORT ?? 3010, () => {
   console.log('Servidor rodando na porta 3010');
 });
+
+

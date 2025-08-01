@@ -188,6 +188,36 @@ export class DatabasePostgres {
     await sql`DELETE FROM manutencao WHERE id = ${id}`;
   }
 
+  async atualizarStatusManutencao(id, novoStatus) {
+    try {
+      await sql`
+        UPDATE manutencao
+        SET status = ${novoStatus}
+        WHERE id = ${id}
+      `;
+    } catch (error) {
+      throw new Error('Erro ao atualizar status da manutenção');
+    }
+  }
+
+ async resumoManutencoes() {
+  try {
+    const resultado = await sql`
+      SELECT e.nome_equipamento, m.status
+      FROM manutencao m
+      JOIN equipamentos e ON e.id = m.equipamento_id
+      ORDER BY m.data_manutencao DESC
+      LIMIT 5;
+    `;
+    return resultado;
+  } catch (err) {
+    console.error('Erro ao buscar resumo de manutenções:', err);
+    throw err;
+  }
+}
+
+
+
   // ALERTAS
   async listAlertas() {
     return await sql`SELECT * FROM alertas ORDER BY data_alerta DESC`;
@@ -307,44 +337,26 @@ export class DatabasePostgres {
     return parseInt(result[0].count);
   }
 
-  async calcularMTBF() {
-    const result = await sql`
-      SELECT equipamento_id, data_manutencao
-      FROM manutencao
-      WHERE status = 'concluído'
-      ORDER BY equipamento_id, data_manutencao
-    `;
+  async calcularIntervaloPreventivo() {
+  const result = await sql`
+    SELECT data_manutencao
+    FROM manutencao
+    ORDER BY data_manutencao ASC
+  `;
 
-    const dados = result; // Ajuste se usar outra lib
+  const datas = result.map(r => new Date(r.data_manutencao));
+  if (datas.length < 2) return null;
 
-    const porEquipamento = {};
-
-    dados.forEach(({ equipamento_id, data_manutencao }) => {
-      if (!porEquipamento[equipamento_id]) {
-        porEquipamento[equipamento_id] = [];
-      }
-      porEquipamento[equipamento_id].push(new Date(data_manutencao));
-    });
-
-    const tempos = [];
-
-    for (const datas of Object.values(porEquipamento)) {
-      datas.sort((a, b) => a - b);
-
-      for (let i = 1; i < datas.length; i++) {
-        const diffMs = datas[i] - datas[i - 1];
-        const diffHoras = diffMs / (1000 * 60 * 60);
-        tempos.push(diffHoras);
-      }
-    }
-
-    const totalHoras = tempos.reduce((acc, t) => acc + t, 0);
-    const totalFalhas = tempos.length;
-
-    if (totalFalhas === 0) return null;
-
-    return totalHoras / totalFalhas;
+  let somaIntervalos = 0;
+  for (let i = 1; i < datas.length; i++) {
+    const dias = (datas[i] - datas[i - 1]) / (1000 * 60 * 60 * 24);
+    somaIntervalos += dias;
   }
+
+  const media = somaIntervalos / (datas.length - 1);
+  return parseFloat(media.toFixed(1)); // dias
+}
+
 
   async salvarPrevisaoManutencao({ id, equipamento_id, dias, data_prevista, modelo }) {
     await sql`
@@ -381,3 +393,4 @@ export class DatabasePostgres {
     return resultado[0] ?? { email_notif: true, sms_notif: false, push_notif: true };
   }
 }
+

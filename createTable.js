@@ -48,17 +48,6 @@ await sql`
 `
 
 
-await sql`
-  CREATE TABLE IF NOT EXISTS agendamentos (
-    id UUID PRIMARY KEY,
-    equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
-    data_agendada DATE NOT NULL,
-    status TEXT NOT NULL,
-    responsavel TEXT,
-    descricao TEXT
-  );
-`
-
 
 await sql`
   CREATE TABLE IF NOT EXISTS alertas (
@@ -93,16 +82,6 @@ await sql`
 `
 
 
-await sql`
-  CREATE TABLE IF NOT EXISTS agendamentos (
-    id UUID PRIMARY KEY,
-    equipamento_id UUID NOT NULL REFERENCES equipamentos(id),
-    data_agendada DATE NOT NULL,
-    status TEXT NOT NULL,
-    tecnico TEXT,
-    descricao TEXT
-  );
-`
 await sql`
   CREATE TABLE  IF NOT EXISTS analises (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

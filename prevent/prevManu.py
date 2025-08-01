@@ -1,47 +1,40 @@
-import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, r2_score
+from datetime import datetime
 from joblib import dump
 
-np.random.seed(42)  # para resultados reproduzíveis
+# Exemplo simplificado de dados simulados
+dados = [
+    {"equipamento_id": "A1", "data_manutencao": "2024-01-10", "media_temp": 55.3, "max_vibracao": 8.7},
+    {"equipamento_id": "A1", "data_manutencao": "2024-06-04", "media_temp": 62.1, "max_vibracao": 9.4},
+    {"equipamento_id": "A1", "data_manutencao": "2024-11-11", "media_temp": 64.8, "max_vibracao": 10.2},
+]
 
-# Gerar dados simulados
-n = 50
-data = pd.DataFrame({
-    'dias_uso_total': np.random.randint(50, 1000, size=n),
-    'horas_dia': np.random.randint(1, 12, size=n),
-    'ultima_manutencao_dias': np.random.randint(1, 100, size=n),
-    'trocou_peca': np.random.choice([0,1], size=n),
-    'falha_recente': np.random.choice([0,1], size=n),
-})
+df = pd.DataFrame(dados)
+df['data_manutencao'] = pd.to_datetime(df['data_manutencao'])
+df['dias_desde_ultima'] = df['data_manutencao'].diff().dt.days
+df['dias_ate_proxima'] = df['data_manutencao'].shift(-1) - df['data_manutencao']
+df['dias_ate_proxima'] = df['dias_ate_proxima'].dt.days
 
-# Criar target com alguma relação linear + ruído
-data['dias_ate_proxima_manutencao'] = (
-    100 
-    - 0.05 * data['dias_uso_total'] 
-    - 1.5 * data['horas_dia'] 
-    - 0.3 * data['ultima_manutencao_dias'] 
-    + 10 * data['trocou_peca'] 
-    - 15 * data['falha_recente'] 
-    + np.random.normal(0, 5, size=n)  # ruído gaussiano
-).astype(int)
+df = df.dropna()  # remove última linha, que não tem "próxima"
 
-# Separar features e target
-X = data.drop('dias_ate_proxima_manutencao', axis=1)
-y = data['dias_ate_proxima_manutencao']
+# MODELO
+from sklearn.linear_model import LinearRegression
 
-# Treinar o modelo com 40% para teste
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+X = df[['media_temp', 'max_vibracao', 'dias_desde_ultima']]
+y = df['dias_ate_proxima']
 
 modelo = LinearRegression()
-modelo.fit(X_train, y_train)
+modelo.fit(X, y)
 
-# Avaliar
-y_pred = modelo.predict(X_test)
-print("MAE:", mean_absolute_error(y_test, y_pred))
-print("R²:", r2_score(y_test, y_pred))
+# Previsão para novo caso:
+exemplo = pd.DataFrame([{
+    "media_temp": 65,
+    "max_vibracao": 9.8,
+    "dias_desde_ultima": 150
+}])
 
-# Salvar modelo
+previsao_dias = modelo.predict(exemplo)[0]
+print(f"Previsão: próxima manutenção em {int(previsao_dias)} dias")
+
+
 dump(modelo, 'modeloRegreMan.pkl')

@@ -36,7 +36,7 @@ Content-Type: application/json
 
 {
     "equipamento_id": "d8e16f11-5e76-4547-bdb3-d97771423a6d" ,
-    "data_manutencao": "2025-07-31",
+    "data_manutencao": "2025-08-01",
     "status": "pendente",
     "responsavel_id": "d51db308-df69-4390-9322-70de55061df0"
 }
@@ -50,6 +50,29 @@ Content-Type: application/json
     "equipamento_id": "38182612-0bd2-415c-bfa1-8aeeb065dc12" ,
     "descricao": "xxxxxxx",
     "status": "aberta",
-    "data_abertura": "2025-07-26",
+    "data_abertura": "2025-07-02",
     "data_fechamento": "2025-08-01"
+}
+
+
+###
+POST http://localhost:3010/prever-proxima
+Content-Type: application/json
+
+{
+  "media_temp": 70,
+  "max_vibracao": 2.5,
+  "dias_desde_ultima": 30
+}
+
+###
+POST http://localhost:3010/alertas
+Content-Type: application/json
+
+{
+    "equipamento_id":"38182612-0bd2-415c-bfa1-8aeeb065dc12",
+    "data_alerta":"2025-07-02",,
+    "descricao":"XXX",
+    "nivel_gravidade": "2",
+    "resolvido": "0"
 }
