@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; 
 import './AlertasNoti.css';
 
 const AlertasNoti = () => {
@@ -12,7 +12,6 @@ const AlertasNoti = () => {
   const audioRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Busca os dados iniciais
   useEffect(() => {
     const buscarDados = async () => {
       try {
@@ -30,19 +29,23 @@ const AlertasNoti = () => {
         const equipamentosData = await equipamentosResp.json();
         const configData = await configResp.json();
 
-        setAlertas(alertasData);
+        const alertasConvertidos = alertasData.map((a) => ({
+          ...a,
+          nivel_gravidade: String(a.nivel_gravidade)
+        }));
+
+        setAlertas(alertasConvertidos);
         setEquipamentos(equipamentosData);
-        setPushNotifAtivada(!!configData.push_notif); // garante boolean
+        setPushNotifAtivada(!!configData.push_notif);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
-        setPushNotifAtivada(true); // fallback para true
+        setPushNotifAtivada(true);
       }
     };
 
     buscarDados();
   }, []);
 
-  // Exibe alerta só se pushNotifAtivada e alertas existirem
   useEffect(() => {
     if (pushNotifAtivada && alertas.length > 0) {
       exibirAlerta();
@@ -89,23 +92,29 @@ const AlertasNoti = () => {
     timerRef.current = setTimeout(() => setMostrarAlerta(false), 5000);
   };
 
-  // Filtros para exibir alertas conforme seleção
   const alertasFiltrados = alertas.filter(
     (alerta) =>
       (equipamentoSelecionado === 'Todos' || alerta.equipamento_id === equipamentoSelecionado) &&
-      (gravidade === 'Todos' || String(alerta.nivel_gravidade) === gravidade)
+      (gravidade === 'Todos' || alerta.nivel_gravidade === gravidade)
   );
 
-  const gravidadesUnicas = Array.from(new Set(alertas.map((a) => String(a.nivel_gravidade)))).filter(Boolean);
+  const gravidadesUnicas = Array.from(new Set(alertas.map((a) => a.nivel_gravidade))).filter(Boolean);
+
+  const getNomeGravidade = (nivel) => {
+    switch (nivel) {
+      case '1': return 'Pouca probabilidade de falha detectada';
+      case '2': return 'Média probabilidade de falha detectada';
+      case '3': return 'Alta probabilidade de falha detectada';
+      default: return `Gravidade ${nivel}`;
+    }
+  };
 
   return (
     <div className="alertas-container">
-      {/* Mostra alerta na página só se push ativada e mostrarAlerta true */}
       {pushNotifAtivada && mostrarAlerta && (
         <div className="notificacao-topo">⚠️ Falha detectada: "falha eminente no motor"</div>
       )}
 
-      {/* Som só se push ativada */}
       {pushNotifAtivada && <audio ref={audioRef} src="/alerta.mp3" preload="auto" />}
 
       <div className="filtros-alertas">
@@ -115,7 +124,7 @@ const AlertasNoti = () => {
             <option value="Todos">Todos</option>
             {gravidadesUnicas.map((nivel, i) => (
               <option key={i} value={nivel}>
-                {nivel === '1' ? 'Baixa' : nivel === '2' ? 'Média' : 'Alta'}
+                {getNomeGravidade(nivel)}
               </option>
             ))}
           </select>
@@ -132,17 +141,17 @@ const AlertasNoti = () => {
             ))}
           </select>
         </div>
-
-        <button className="btn-historico">🕒 Histórico</button>
       </div>
 
       <div className="lista-alertas">
         {alertasFiltrados.map((alerta) => (
-          <div key={alerta.id} className="cartao-alerta">
+          <div
+            key={alerta.id}
+            className={`cartao-alerta gravidade-${alerta.nivel_gravidade}`}
+          >
             <span className="emoji-alerta">⚠️</span>
             <div>
-              <h3 className="titulo-alerta">{alerta.tipo}</h3>
-              <p className="mensagem-alerta">{alerta.descricao}</p>
+              <p className="mensagem-alerta">{getNomeGravidade(alerta.nivel_gravidade)}</p>
               <p className="gravidade-alerta">Gravidade: {alerta.nivel_gravidade}</p>
             </div>
           </div>

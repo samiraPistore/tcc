@@ -11,11 +11,11 @@ const RelatorioAn = () => {
 
       {/* Filtros */}
       <div className="filters">
-        <label>
+        <label className="data">
           Data
           <input type="date" />
         </label>
-        <label>
+        <label className="status">
           Status
           <select>
             <option>Concluído</option>
@@ -24,7 +24,7 @@ const RelatorioAn = () => {
             <option>Em andamento</option>
           </select>
         </label>
-        <label>
+        <label className="equipamento">
           Equipamento
           <select>
             <option>Todos</option>
@@ -32,7 +32,6 @@ const RelatorioAn = () => {
             <option>Bomba Hidráulica</option>
           </select>
         </label>
-        <button>Gerar relatórios</button>
       </div>
 
       {/* Gráficos em layout responsivo */}

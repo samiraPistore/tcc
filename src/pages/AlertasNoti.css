@@ -91,3 +91,30 @@
   from { opacity: 0; top: 0px; }
   to { opacity: 1; top: 20px; }
 }
+
+.cartao-alerta {
+  border-left: 6px solid #ccc;
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gravidade-1 {
+  border-left-color: #4caf50;
+  background-color: #e8f5e9;
+}
+
+.gravidade-2 {
+  border-left-color: #ffeb3b;
+  background-color: #fffde7;
+}
+
+.gravidade-3 {
+  border-left-color: #f44336;
+  background-color: #ffebee;
+}

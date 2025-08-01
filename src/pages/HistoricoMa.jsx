@@ -112,7 +112,7 @@ const MaintenanceScreen = () => {
               <th>Responsável</th>
               <th>Descrição</th>
               <th>Status</th>
-              <th>Ações</th>
+              <th>Editar</th>
             </tr>
           </thead>
           <tbody>
@@ -131,16 +131,21 @@ const MaintenanceScreen = () => {
                         <option value="Em Andamento">Em Andamento</option>
                       </select>
                     ) : (
-                      <span className={`status ${item.status.toLowerCase().replace(' ', '-')}`}>
-                        {item.status}
-                      </span>
+                      <span className={`status ${
+                      item.status.toLowerCase()
+                        .normalize("NFD")           // Remove acentos
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .replace(/\s+/g, '-')       // Substitui espaços por hífen
+                    }`}>
+                      {item.status}
+                    </span>
                     )}
                   </td>
                   <td>
                     {editandoId === item.id ? (
                       <button onClick={() => salvarStatus(item.id)}>Salvar</button>
                     ) : (
-                      <button onClick={() => iniciarEdicao(item.id, item.status)}>Editar</button>
+                      <button onClick={() => iniciarEdicao(item.id, item.status)}>📝</button>
                     )}
                   </td>
                 </tr>

@@ -10,27 +10,37 @@ import axios from 'axios';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const GraficoOs = () => {
+export default function GraficoOs() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    axios.get('/api/ordens-servico') // Substitua pela sua rota
-      .then((res) => {
-        const dados = res.data;
+    axios.get('/os')
+      .then(res => {
+        const ordens = res.data;
+        const statusCount = ordens.reduce((acc, os) => {
+          acc[os.status] = (acc[os.status] || 0) + 1;
+          return acc;
+        }, {});
+        const labels = Object.keys(statusCount);
+        const values = Object.values(statusCount);
+
         setData({
-          labels: dados.labels,
+          labels,
           datasets: [{
-            data: dados.values,
-            backgroundColor: ['#8e44ad', '#3498db']
+            data: values,
+            backgroundColor: labels.map(status => {
+              if (status.toLowerCase() === 'aberta') return '#3498db';
+              if (status.toLowerCase() === 'fechada') return '#8e44ad';
+              return '#ccc';
+            }),
           }]
         });
       })
       .catch(() => {
-        // fallback se a API falhar
         setData({
           labels: ['Fechada', 'Aberta'],
           datasets: [{
-            data: [70, 30],
+            data: [6, 2],
             backgroundColor: ['#8e44ad', '#3498db']
           }]
         });
@@ -56,25 +66,18 @@ const GraficoOs = () => {
     URL.revokeObjectURL(a.href);
   };
 
-  if (!data) return <div className="grafico-analise-section">Carregando gráfico...</div>;
+  if (!data) return <div>Carregando gráfico...</div>;
 
   return (
-    <div className="grafico-analise-section">
+    <div style={{ maxWidth: 400, margin: 'auto' }}>
       <h3>Distribuição das Ordens de Serviço</h3>
       <Pie data={data} />
-      <button type="button" onClick={downloadCSV} style={{
-        marginTop: '60px',
-        padding: '8px 12px',
-        backgroundColor: '#007bff',
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-      }}>
+      <button
+        onClick={downloadCSV}
+        className="botao-salvar"
+      >
         Salvar CSV
       </button>
     </div>
   );
-};
-
-export default GraficoOs;
+}

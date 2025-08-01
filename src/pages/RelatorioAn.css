@@ -10,12 +10,6 @@
   margin-bottom: 30px;
 }
 
-.filters label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-}
-
 .filters input,
 .filters select {
   margin-top: 5px;
@@ -32,6 +26,7 @@
   border-radius: 4px;
   cursor: pointer;
   align-self: end;
+  margin-left: 10px;
 }
 
 .filters button:hover {
@@ -49,4 +44,16 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.data{
+  margin-top: 10px;
+}
+
+.status{
+  margin-top: 8px;
+}
+
+.equipamento{
+  margin-top: 14px;
 }

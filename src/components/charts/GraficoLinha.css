@@ -14,4 +14,6 @@
   margin-bottom: 1rem;
 }
 
-
+.botao-salvar:hover{
+  background-color: #0056b3;
+}

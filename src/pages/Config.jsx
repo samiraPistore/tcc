@@ -101,13 +101,8 @@ function Config() {
 
         <div className="config-section"></div>
         <h3>Integrações do Sistema</h3>
-        <button onClick={() => navigate('/integraco')}>Integrações do Sistema</button>
+        <button onClick={() => navigate('/integracoes')}>Integrações do Sistema</button>
 
-        <div className="config-section"></div>
-        <h3>Análise Preditiva</h3>
-
-        <div className="config-section"></div>
-        <h3>Segurança</h3>
 
         <button
           className="btn-salvar"

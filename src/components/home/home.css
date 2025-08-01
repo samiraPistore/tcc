@@ -10,6 +10,7 @@ body {
   color: #333;
 }
 
+
 /* Container principal */
 .dashboard-container {
   display: flex;
@@ -23,7 +24,7 @@ body {
 }
 
 .scroll-container {
-  max-height: calc(100vh - 120px); /* Ajuste se o cabeçalho for maior ou menor */
+  max-height: calc(100vh - 200px); /* Ajuste se o cabeçalho for maior ou menor */
   overflow-y: auto;
   padding-right: 10px; /* espaço pra barra de rolagem */
 }
@@ -122,6 +123,13 @@ body {
   margin: 5px 0;
 }
 
+.alerta {
+  font-size: 0.9rem; /* Reduz o tamanho da fonte */
+  padding: 6px 10px; /* Diminui o espaçamento interno */
+  margin-bottom: 8px; /* Menor espaçamento entre alertas */
+}
+
+
 .botao {
   border-radius: 10px;
   background-color: #41b8d5;
@@ -143,7 +151,7 @@ body {
   height: 650px;
   margin: auto;
   text-align: justify;
-  transform: translateY(-35px);
+  transform: translateY(1px);
 }
 
 /* Responsividade */
@@ -198,4 +206,44 @@ body {
   .resumoManuten {
     flex: 1 1 22%;
   }
+}
+
+.card-alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border-left: 5px solid;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.emoji-alerta {
+  font-size: 24px;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.card-alerta .mensagem-alerta,
+.card-alerta .gravidade-alerta,
+.card-alerta .equipamento-alerta {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Cores por gravidade */
+.gravidade-1 {
+  background-color: #e6f4ea;
+  border-color: #4caf50;
+}
+
+.gravidade-2 {
+  background-color: #fffbe6;
+  border-color: #ffeb3b;
+}
+
+.gravidade-3 {
+  background-color: #fdecea;
+  border-color: #f44336;
 }

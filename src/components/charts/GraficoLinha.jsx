@@ -26,7 +26,7 @@ const GraficoLinha = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    axios.get('/api/ordens-por-data') // Substitua pela sua rota
+    axios.get('/api/ordens-por-data')
       .then((res) => {
         const dados = res.data;
         setData({
@@ -48,7 +48,6 @@ const GraficoLinha = () => {
         });
       })
       .catch(() => {
-        // fallback
         setData({
           labels: ['2025-07-20', '2025-07-26'],
           datasets: [
@@ -94,15 +93,11 @@ const GraficoLinha = () => {
     <div className="grafico-analise-section">
       <h3>Ordens ao Longo do Tempo</h3>
       <Line data={data} />
-      <button type="button" onClick={downloadCSV} style={{
-        marginTop: '10px',
-        padding: '8px 12px',
-        backgroundColor: '#007bff',
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer'
-      }}>
+      <button
+        className="botao-salvar"
+        type="button"
+        onClick={downloadCSV}
+      >
         Salvar CSV
       </button>
     </div>
