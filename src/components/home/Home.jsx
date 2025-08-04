@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Main from '../template/Main';
 import './home.css';
-import GraficoAnalise from '../charts/Graficos.jsx';
+import GraficoAnalise from '../charts/GraficoStatus.jsx';
 
 const Home = () => {
   const navigate = useNavigate();

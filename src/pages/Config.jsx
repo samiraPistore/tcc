@@ -99,10 +99,7 @@ function Config() {
           </div>
         </div>
 
-        <div className="config-section"></div>
-        <h3>Integrações do Sistema</h3>
-        <button onClick={() => navigate('/integracoes')}>Integrações do Sistema</button>
-
+        
 
         <button
           className="btn-salvar"

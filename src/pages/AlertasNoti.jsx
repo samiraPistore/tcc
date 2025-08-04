@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'; 
 import './AlertasNoti.css';
+import Main from '../components/template/Main';
 
 const AlertasNoti = () => {
   const [alertas, setAlertas] = useState([]);
@@ -11,6 +12,13 @@ const AlertasNoti = () => {
 
   const audioRef = useRef(null);
   const timerRef = useRef(null);
+
+  const headerProps = {
+  icon: 'bell',
+  title: 'Alertas',
+  subtitle: 'Notificações e Gravidade de Equipamentos'
+};
+
 
   useEffect(() => {
     const buscarDados = async () => {
@@ -110,6 +118,7 @@ const AlertasNoti = () => {
   };
 
   return (
+    <Main {...headerProps}>
     <div className="alertas-container">
       {pushNotifAtivada && mostrarAlerta && (
         <div className="notificacao-topo">⚠️ Falha detectada: "falha eminente no motor"</div>
@@ -158,6 +167,7 @@ const AlertasNoti = () => {
         ))}
       </div>
     </div>
+    </Main>
   );
 };
 

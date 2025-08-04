@@ -27,6 +27,7 @@ main.content {
   width: 100%;
   padding: 20px;
   border-radius: 8px;
+  
 }
 
 /* Responsividade */
@@ -45,3 +46,4 @@ main.content {
     padding: 12px;
   }
 }
+

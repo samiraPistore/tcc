@@ -13,8 +13,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 export default function GraficoOs() {
   const [data, setData] = useState(null);
 
-  useEffect(() => {
-    axios.get('/os')
+  const fetchData = () => {
+    axios.get('http://localhost:3010/os')
       .then(res => {
         const ordens = res.data;
         const statusCount = ordens.reduce((acc, os) => {
@@ -36,15 +36,12 @@ export default function GraficoOs() {
           }]
         });
       })
-      .catch(() => {
-        setData({
-          labels: ['Fechada', 'Aberta'],
-          datasets: [{
-            data: [6, 2],
-            backgroundColor: ['#8e44ad', '#3498db']
-          }]
-        });
-      });
+  };
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const downloadCSV = (e) => {

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./AgendaManu.css";
+import editarIcon from '../assets/img/lista-de-controle.png';
+
 
 const AgendaManu = () => {
   const [equipamentosDisponiveis, setEquipamentosDisponiveis] = useState([]);
@@ -178,9 +180,10 @@ const AgendaManu = () => {
           />
         </label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Salvando..." : "Salvar"}
-        </button>
+        <button type="submit" disabled={loading} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <img src={editarIcon} alt="Editar" style={{ width: 20, height: 20 }} />
+        {loading ? "Salvando..." : "Salvar"}
+      </button>
       </form>
     </div>
   );

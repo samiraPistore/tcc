@@ -23,11 +23,7 @@ body {
   margin: 0 auto;
 }
 
-.scroll-container {
-  max-height: calc(100vh - 200px); /* Ajuste se o cabeçalho for maior ou menor */
-  overflow-y: auto;
-  padding-right: 10px; /* espaço pra barra de rolagem */
-}
+
 
 /* Cartões */
 .dashboard-card {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,9 +8,9 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
-} from 'chart.js';
-import axios from 'axios';
+  Legend,
+} from "chart.js";
+import axios from "axios";
 
 ChartJS.register(
   CategoryScale,
@@ -25,47 +25,41 @@ ChartJS.register(
 const GraficoLinha = () => {
   const [data, setData] = useState(null);
 
-  useEffect(() => {
-    axios.get('/api/ordens-por-data')
+  const fetchData = () => {
+    axios
+      .get("http://localhost:3010/os/quantidade")
       .then((res) => {
         const dados = res.data;
+        const labels = dados.map((d) => new Date(d.data).toISOString().slice(0, 10));
+        const abertas = dados.map((d) => parseInt(d.abertas));
+        const fechadas = dados.map((d) => parseInt(d.fechadas));
+
+
         setData({
-          labels: dados.labels,
+          labels,
           datasets: [
             {
-              label: 'Ordens Abertas',
-              data: dados.abertas,
-              borderColor: 'blue',
-              backgroundColor: 'blue'
+              label: "Ordens Abertas",
+              data: abertas,
+              borderColor: "blue",
+              backgroundColor: "blue",
             },
             {
-              label: 'Ordens Fechadas',
-              data: dados.fechadas,
-              borderColor: 'green',
-              backgroundColor: 'green'
-            }
-          ]
+              label: "Ordens Fechadas",
+              data: fechadas,
+              borderColor: "green",
+              backgroundColor: "green",
+            },
+          ],
         });
       })
-      .catch(() => {
-        setData({
-          labels: ['2025-07-20', '2025-07-26'],
-          datasets: [
-            {
-              label: 'Ordens Abertas',
-              data: [1, 2],
-              borderColor: 'blue',
-              backgroundColor: 'blue'
-            },
-            {
-              label: 'Ordens Fechadas',
-              data: [0, 1],
-              borderColor: 'green',
-              backgroundColor: 'green'
-            }
-          ]
-        });
-      });
+  }
+
+  useEffect(() => {
+    fetchData(); // chamada inicial
+    const interval = setInterval(fetchData, 10000); // atualiza a cada 10s
+
+    return () => clearInterval(interval);
   }, []);
 
   const downloadCSV = (e) => {
@@ -74,30 +68,27 @@ const GraficoLinha = () => {
 
     if (!data) return;
 
-    let csv = 'Data,Ordens Abertas,Ordens Fechadas\n';
+    let csv = "Data,Ordens Abertas,Ordens Fechadas\n";
     data.labels.forEach((label, i) => {
       csv += `${label},${data.datasets[0].data[i]},${data.datasets[1].data[i]}\n`;
     });
 
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = 'ordens_tempo.csv';
+    a.download = "ordens_tempo.csv";
     a.click();
     URL.revokeObjectURL(a.href);
   };
 
-  if (!data) return <div className="grafico-analise-section">Carregando gráfico...</div>;
+  if (!data)
+    return <div className="grafico-analise-section">Carregando gráfico...</div>;
 
   return (
     <div className="grafico-analise-section">
       <h3>Ordens ao Longo do Tempo</h3>
       <Line data={data} />
-      <button
-        className="botao-salvar"
-        type="button"
-        onClick={downloadCSV}
-      >
+      <button className="botao-salvar" type="button" onClick={downloadCSV}>
         Salvar CSV
       </button>
     </div>

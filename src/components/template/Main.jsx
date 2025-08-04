@@ -11,6 +11,7 @@ const Main = (props) => (
         {/* Conteúdo dinâmico das páginas será inserido aqui */}
         {props.children}
       </div>
+      <div className='scroll-container'></div>
     </main>
   </>
 );

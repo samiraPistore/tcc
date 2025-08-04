@@ -100,21 +100,25 @@ th {
 
 .status {
   font-weight: bold;
-  padding: 6px 12px;
+  padding: 10px 22px; /* AUMENTA a área colorida */
   text-align: center;
 }
 
 .concluido {
   background-color: #28a745;
   color: white;
+  border-radius: 10px;
 }
 
 .em-andamento {
   background-color: #ffc107;
-  color: black;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
 }
 
 .pendente {
   background-color: #575757;
   color: white;
+  border-radius: 10px;
 }
+

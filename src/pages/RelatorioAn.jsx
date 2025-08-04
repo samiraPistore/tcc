@@ -1,13 +1,19 @@
 import React from 'react';
 import './RelatorioAn.css';
-import GraficoAnalise from '../components/charts/Graficos';
+import GraficoAnalise from '../components/charts/GraficoStatus';
 import GraficoOrdensServico from '../components/charts/GraficoLinha';
 import GraficoPizzaOrdens from '../components/charts/GraficoOs';
+import Main from '../components/template/Main';
+
 
 const RelatorioAn = () => {
   return (
-    <div className="relatorio-container">
-      <h2>Relatórios e Análises</h2>
+    <Main 
+      icon="MdAnalytics" 
+      title="Relatórios e Análises"
+      subtitle="Análises e status dos equipamentos"
+    >
+    
 
       {/* Filtros */}
       <div className="filters">
@@ -48,7 +54,7 @@ const RelatorioAn = () => {
           <GraficoOrdensServico />
         </div>
       </div>
-    </div>
+    </Main>
   );
 };
 

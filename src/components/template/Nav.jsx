@@ -25,9 +25,6 @@ const Nav = ({ handleLogout }) => (
                 <i className="fa fa-bell"></i> Alertas e Notificações
             </Link>
 
-            <Link to="/previsoes">
-                <i className="fa fa-line-chart"></i> Previsões de Falha
-            </Link>
             
             <Link to="/relatorios">
                 <i className="fa fa-bar-chart"></i> Relatórios e Análises

@@ -41,114 +41,94 @@ const initialState = {
 };
 
 export default class ControleCrud extends Component {
-  // Inicializa o estado do componente com a estrutura inicial
   state = { ...initialState };
 
-  // Método do ciclo de vida do React: executa quando o componente é montado
   componentDidMount() {
-    this.loadEquipamentos();  // Chama para carregar a lista de equipamentos do backend
+    this.loadEquipamentos();
   }
 
-  // Método para carregar equipamentos da API e atualizar o estado
   loadEquipamentos() {
     axios.get(baseUrlEquip)
       .then(resp => {
-        this.setState({ listEquipamentos: resp.data }); // Atualiza a lista de equipamentos
+        this.setState({ listEquipamentos: resp.data });
       })
       .catch(err => {
-        console.error('Erro ao carregar equipamentos:', err); // Log de erro caso a requisição falhe
+        console.error('Erro ao carregar equipamentos:', err);
       });
   }
 
-  // Método para carregar sensores associados a um equipamento específico
   loadSensores(equipamentoId) {
     axios.get(`${baseUrlSensor}?equipamento_id=${equipamentoId}`)
       .then(resp => {
-        this.setState({ listSensores: resp.data });  // Atualiza lista de sensores no estado
+        this.setState({ listSensores: resp.data });
       })
       .catch(err => {
         console.error('Erro ao carregar sensores:', err);
       });
   }
 
-  // Método para limpar o formulário de equipamento, resetando os valores
   clearEquipamento() {
     this.setState({ equipamento: initialState.equipamento });
   }
 
-  // Método para limpar o formulário de sensor, resetando os valores
   clearSensor() {
     this.setState({ sensor: initialState.sensor });
   }
 
-  // Salvar equipamento: cria novo ou atualiza um existente (PUT ou POST)
   saveEquipamento = (e) => {
-    e.preventDefault();  // Previne o comportamento padrão do form (reload da página)
+    e.preventDefault();
     const equipamento = this.state.equipamento;
-
-    // Define método HTTP e URL dependendo se o equipamento tem id (editar) ou não (criar)
     const method = equipamento.id ? 'put' : 'post';
     const url = equipamento.id ? `${baseUrlEquip}/${equipamento.id}` : baseUrlEquip;
 
-    // Realiza a requisição para salvar
     axios[method](url, equipamento)
       .then(() => {
-        this.loadEquipamentos();  // Atualiza lista de equipamentos na tela
-        this.setState({ equipamento: initialState.equipamento }); // Limpa formulário
+        this.loadEquipamentos();
+        this.setState({ equipamento: initialState.equipamento });
       })
       .catch(err => {
         console.error('Erro ao salvar equipamento:', err);
       });
   }
 
-  // Salvar sensor: cria novo ou atualiza um existente
   saveSensor = (e) => {
     e.preventDefault();
     const sensor = this.state.sensor;
-
-    // Ajusta os nomes dos campos para enviar para a API
     const sensorParaEnviar = {
       nome: sensor.nome_sensor,
       tipo: sensor.tipo_sensor,
       equipamento_id: sensor.equipamentoId
     };
-
-    // Define método HTTP e URL para criar ou atualizar
     const method = sensor.id ? 'put' : 'post';
     const url = sensor.id ? `${baseUrlSensor}/${sensor.id}` : baseUrlSensor;
 
-    // Realiza a requisição para salvar sensor
     axios[method](url, sensorParaEnviar)
       .then(() => {
-        this.loadSensores(sensor.equipamentoId); // Atualiza lista de sensores após salvar
-        this.clearSensor();                      // Limpa formulário de sensor
-        this.setState({ showSensorForm: false }); // Fecha formulário de sensor
+        this.loadSensores(sensor.equipamentoId);
+        this.clearSensor();
+        this.setState({ showSensorForm: false });
       })
       .catch(err => {
         console.error('Erro ao salvar sensor:', err);
       });
   }
 
-  // Atualiza estado do equipamento conforme mudanças nos inputs do formulário
   updateFieldEquipamento = (event) => {
     const equipamento = { ...this.state.equipamento };
     equipamento[event.target.name] = event.target.value;
     this.setState({ equipamento });
   }
 
-  // Atualiza estado do sensor conforme inputs do formulário
   updateFieldSensor = (event) => {
     const sensor = { ...this.state.sensor };
     sensor[event.target.name] = event.target.value;
     this.setState({ sensor });
   }
 
-  // Carrega equipamento selecionado para edição no formulário
   loadEquipamento = (equipamento) => {
     this.setState({ equipamento });
   }
 
-  // Remove equipamento da API e atualiza lista na tela
   removeEquipamento(equipamento) {
     axios.delete(`${baseUrlEquip}/${equipamento.id}`)
       .then(() => {
@@ -159,7 +139,6 @@ export default class ControleCrud extends Component {
       });
   }
 
-  // Remove sensor da API e atualiza lista na tela
   removeSensor(sensor) {
     axios.delete(`${baseUrlSensor}/${sensor.id}`)
       .then(() => {
@@ -170,28 +149,25 @@ export default class ControleCrud extends Component {
       });
   }
 
-  // Abre o formulário de sensores para um equipamento selecionado
   openSensorForm = (equipamento) => {
     this.setState({
-      equipamentoSelecionadoParaSensor: equipamento,                // Salva equipamento selecionado
-      sensor: { ...initialState.sensor, equipamentoId: equipamento.id }, // Inicializa formulário de sensor com equipamentoId
-      showSensorForm: true                                           // Mostra formulário de sensor
+      equipamentoSelecionadoParaSensor: equipamento,
+      sensor: { ...initialState.sensor, equipamentoId: equipamento.id },
+      showSensorForm: true
     }, () => {
-      this.loadSensores(equipamento.id);                             // Carrega sensores do equipamento
+      this.loadSensores(equipamento.id);
     });
   }
 
-  // Fecha formulário de sensor e limpa estado relacionado
   closeSensorForm = () => {
-    this.setState({ 
-      showSensorForm: false, 
-      equipamentoSelecionadoParaSensor: null, 
-      listSensores: [], 
-      sensor: initialState.sensor 
+    this.setState({
+      showSensorForm: false,
+      equipamentoSelecionadoParaSensor: null,
+      listSensores: [],
+      sensor: initialState.sensor
     });
   }
 
-  // Renderiza o formulário de equipamento (novo/editar)
   renderFormEquipamento() {
     const eq = this.state.equipamento;
     return (
@@ -288,47 +264,45 @@ export default class ControleCrud extends Component {
     );
   }
 
-  // Renderiza tabela com equipamentos e ações de editar, excluir e abrir sensores
   renderTableEquipamentos() {
     return (
       <div className="table-wrapper">
-      <table className="table mt-4">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Modelo</th>
-            <th>Local</th>
-            <th>Status</th>
-            <th>Fabricante</th>
-            <th>Ano</th>
-            <th>Descrição</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.state.listEquipamentos.map(equip => (
-            <tr key={equip.id}>
-              <td>{equip.nome_equipamento}</td>
-              <td>{equip.modelo}</td>
-              <td>{equip.local}</td>
-              <td>{equip.status}</td>
-              <td>{equip.fabricante}</td>
-              <td>{equip.ano_aquisicao}</td>
-              <td>{equip.descricao}</td>
-              <td>
-                <button className="btn btn-warning me-2" onClick={() => this.loadEquipamento(equip)}>Editar</button>
-                <button className="btn btn-danger me-2" onClick={() => this.removeEquipamento(equip)}>Excluir</button>
-                <button className="btn btn-info" onClick={() => this.openSensorForm(equip)}>Sensores</button>
-              </td>
+        <table className="table mt-4">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Modelo</th>
+              <th>Local</th>
+              <th>Status</th>
+              <th>Fabricante</th>
+              <th>Ano</th>
+              <th>Descrição</th>
+              <th>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {this.state.listEquipamentos.map(equip => (
+              <tr key={equip.id}>
+                <td>{equip.nome_equipamento}</td>
+                <td>{equip.modelo}</td>
+                <td>{equip.local}</td>
+                <td>{equip.status}</td>
+                <td>{equip.fabricante}</td>
+                <td>{equip.ano_aquisicao}</td>
+                <td>{equip.descricao}</td>
+                <td>
+                  <button className="btn btn-warning me-2" onClick={() => this.loadEquipamento(equip)}>Editar</button>
+                  <button className="btn btn-danger me-2" onClick={() => this.removeEquipamento(equip)}>Excluir</button>
+                  <button className="btn btn-info" onClick={() => this.openSensorForm(equip)}>Sensores</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }
 
-  // Renderiza formulário para adicionar/editar sensores de um equipamento selecionado
   renderFormSensor() {
     const s = this.state.sensor;
     return (
@@ -366,7 +340,6 @@ export default class ControleCrud extends Component {
     );
   }
 
-  // Renderiza tabela com sensores do equipamento selecionado, com ações editar e excluir
   renderTableSensores() {
     return (
       <table className="table mt-3">
@@ -401,14 +374,13 @@ export default class ControleCrud extends Component {
     );
   }
 
-  // Render principal do componente: mostra o layout geral
   render() {
     return (
       <Main {...headerProps}>
         <h2>Controle de Equipamentos</h2>
-        {this.renderFormEquipamento()}          {/* Formulário equipamento */}
-        {this.renderTableEquipamentos()}        {/* Tabela equipamentos */}
-        {this.state.showSensorForm && this.renderFormSensor()}  {/* Formulário sensores, condicional */}
+        {this.renderFormEquipamento()}
+        {this.renderTableEquipamentos()}
+        {this.state.showSensorForm && this.renderFormSensor()}
       </Main>
     );
   }

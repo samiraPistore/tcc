@@ -1,21 +1,32 @@
-/* Container geral da página */
-.agenda-page, /* use isso se você tiver uma classe externa */
+/* === GERAL: Evita scroll da página inteira === */
 body,
 html {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* evita scroll da página inteira */
+  overflow: hidden; /* impede scroll global da página */
 }
 
-/* Formulário principal */
+/* === Conteúdo da tela (envolve tudo) === */
+.tela-content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px); /* ajuste se o header for maior/menor */
+  overflow-y: auto; /* permite scroll interno da tela se necessário */
+  padding: 0 20px;
+  box-sizing: border-box;
+  gap: 20px;
+  background-color: #f4f4f4;
+}
+
+/* === Container do formulário principal === */
 .form-container {
   border: 1px solid #ccc;
   padding: 20px;
   border-radius: 8px;
   background: #fdfdfd;
   width: 100%;
-  max-width: 1600px;
+  max-width: 1700px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -23,30 +34,18 @@ html {
   box-sizing: border-box;
 }
 
-/* Wrapper para permitir rolagem interna da área de dados */
-.tela-content {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 140px); /* ajusta conforme altura do header/nav */
-  overflow: hidden;
-  padding: 0 20px;
-  box-sizing: border-box;
-  gap: 20px;
-}
-
-/* Caixa de rolagem da tabela */
-/* TABELA COM SCROLL INTERNO — mantido */
+/* === TABELA COM SCROLL INTERNO === */
 .table-wrapper {
-  max-height: 400px;  /* Define altura máxima da área da tabela */
-  overflow-y: auto;   /* Scroll vertical visível */
-  overflow-x: auto;   /* Scroll horizontal se necessário */
+  max-height: 400px;    /* Define altura máxima visível */
+  overflow-y: auto;     /* Scroll vertical visível */
+  overflow-x: auto;     /* Scroll horizontal se necessário */
   border: 1px solid #ddd;
   border-radius: 8px;
   background: white;
+  margin-top: 10px;
 }
 
-
-/* Layout dos inputs */
+/* === Layout dos inputs === */
 .form-row {
   display: flex;
   gap: 20px;
@@ -57,8 +56,6 @@ html {
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-height: 600px;  /* altura máxima */
-  overflow-y: auto;
 }
 
 .form-group input,
@@ -71,7 +68,7 @@ html {
   margin-top: 5px;
 }
 
-/* Botões */
+/* === Botões === */
 .button-group {
   display: flex;
   gap: 10px;
@@ -85,46 +82,46 @@ html {
   cursor: pointer;
   font-weight: bold;
 }
-/* botão salvar */
+
+/* Salvar */
 .btn.add {
   background-color: #007bff;
   color: white;
 }
-/* botão cancelar */
+
+/* Cancelar */
 .btn.cancel {
   background-color: #e92828;
   color: white;
 }
 
-.btn.cancel:hover{
+.btn.cancel:hover {
   background-color: #c52525;
 }
 
-/*    Botoes tabela    */
+/* === Botões da Tabela === */
 
-/* editar */
+/* Editar */
 .btn-warning {
   background-color: #00BCD4;
   color: white;
 }
 
 .btn-warning:hover {
-  background-color: #0195af; 
-  color: white;
+  background-color: #0195af;
 }
 
-/* excluir */
+/* Excluir */
 .btn-danger {
   background-color: #DC3545;
   color: white;
 }
 
 .btn-danger:hover {
-  background-color: #c82333; 
-  color: white;
+  background-color: #c82333;
 }
 
-/* sensores */
+/* Sensores */
 .btn-info {
   background-color: #004c9e;
   border: none;
@@ -132,12 +129,10 @@ html {
 }
 
 .btn-info:hover {
-  background-color: #002d5c; 
-  color: white;
+  background-color: #002d5c;
 }
 
-
-/* Tabela */
+/* === Estilo da Tabela === */
 .table {
   width: 100%;
   min-width: 1000px;
@@ -152,7 +147,7 @@ html {
   text-align: left;
 }
 
-/* Responsivo */
+/* === Responsividade === */
 @media (max-width: 1200px) {
   .form-container {
     flex-direction: column;

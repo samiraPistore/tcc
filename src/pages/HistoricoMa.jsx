@@ -99,7 +99,7 @@ const MaintenanceScreen = () => {
               <option value="">Todas as Situações</option>
               <option value="Pendente">Pendente</option>
               <option value="Concluído">Concluído</option>
-              <option value="Atrasado">Atrasado</option>
+              <option value="Em Andamento">Em Andamento</option>
             </select>
           </label>
         </div>
