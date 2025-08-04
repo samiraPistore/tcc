@@ -392,5 +392,21 @@ export class DatabasePostgres {
     const resultado = await sql`SELECT * FROM configuracoes LIMIT 1`;
     return resultado[0] ?? { email_notif: true, sms_notif: false, push_notif: true };
   }
+  async countAnalisePorEquipamento() {
+  try {
+    // Consulta SQL que conta quantas análises existem por equipamento
+    const resultado = await sql`
+      SELECT equipamento_id, COUNT(*) AS total_analises
+      FROM analises
+      GROUP BY equipamento_id
+      ORDER BY equipamento_id;
+    `;
+    return resultado; // retorna um array com { equipamento_id, total_analises }
+  } catch (err) {
+    console.error("Erro ao contar análises por equipamento:", err);
+    throw err;
+  }
+}
+
 }
 

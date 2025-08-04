@@ -61,7 +61,7 @@ await sql`
   )
 `;
 
-
+//Ordem de Servço(OS)
 await sql`
   CREATE TABLE IF NOT EXISTS OS (
     id UUID PRIMARY KEY,
@@ -116,7 +116,6 @@ CREATE TABLE IF NOT EXISTS previsoes_manutencao (
 );
 `
 
-// Tabela de configurações (global ou para um único usuário)
 await sql`
   CREATE TABLE IF NOT EXISTS configuracoes (
     id SERIAL PRIMARY KEY,

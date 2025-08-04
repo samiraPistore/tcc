@@ -12,25 +12,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import predicaoRouter from './routes/predicao.js';
 
-
-
-
 dotenv.config();
-
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 const database = new DatabasePostgres();
-
-
-
-app.use('/prever-proxima', predicaoRouter);
-
-app.use('/analise', analiseRouter);
-
 
 // SALVAR configurações (email, sms, push)
 app.post('/configuracoes', async (req, res) => {
@@ -66,9 +54,6 @@ app.post('/auth/register', async (req, res) => {
     return res.status(400).json({ msg: 'Email já está cadastrado!' });
   }
 
-
-
-
   const hashedSenha = await bcrypt.hash(senha, 10);
   await database.createUser({ name, email, senha: hashedSenha, cargo });
   res.status(201).json({ msg: 'Usuário criado!' });
@@ -81,10 +66,7 @@ app.post('/auth/login', async (req, res) => {
     const { email, senha } = req.body;
     const user = await database.findByEmail(email);
 
-
     if (!user) return res.status(400).json({ msg: 'Usuário não encontrado' });
-
-
 
 
     const isSenhaValid = await bcrypt.compare(senha, user.senha);
@@ -95,9 +77,6 @@ app.post('/auth/login', async (req, res) => {
 
 
     return res.json({ msg: 'Login realizado!', token, user: { id: user.id, name: user.name, email: user.email } });
-
-
-
 
   } catch (err) {
     console.error('Erro no login:', err);
@@ -114,14 +93,6 @@ app.get('/users', async (req, res) => {
   const usersSemSenha = users.map(({ senha, ...rest }) => rest);
   res.json(usersSemSenha);
 });
-
-
-
-
-
-
-
-
 
 
 app.get('/users/:id', async (req, res) => {
@@ -156,13 +127,10 @@ app.put('/users/:id', async (req, res) => {
   const { name, email, senha, cargo } = req.body;
   const user = {};
 
-
   if (name) user.name = name;
   if (email) user.email = email;
   if (senha) user.senha = await bcrypt.hash(senha, 10);
   if (cargo) user.cargo = cargo;
-
-
 
 
   await database.updateUser(req.params.id, user);
@@ -182,7 +150,6 @@ app.post('/equipamentos', async (req, res) => {
   await database.createEquipamento({ nome_equipamento, modelo, local, status, fabricante, ano_aquisicao, descricao });
   res.status(201).send();
 });
-
 
 
 app.get('/equipamentos', async (req, res) => {
@@ -229,7 +196,6 @@ app.get('/sensores', async (req, res) => {
 });
 
 
-
 app.get('/sensores/:id', async (req, res) => {
   const sensor = await database.getSensorById(req.params.id);
   res.json(sensor);
@@ -248,10 +214,9 @@ app.delete('/sensores/:id', async (req, res) => {
 });
 
 // LEITURAS
-// Endpoint para criar leitura
+
 app.post('/leituras', async (req, res) => {
   const { sensor_id, valor, timestamp } = req.body;
-
 
   console.log('Recebido no POST /leituras:', { sensor_id, valor, timestamp });
 
@@ -320,6 +285,19 @@ app.get('/resumo-manutencoes', async (req, res) => {
   }
 });
 
+app.patch('/manutencoes/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    await database.atualizarStatusManutencao(id, status);
+    res.status(200).json({ msg: 'Status atualizado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao atualizar status:', err);
+    res.status(500).json({ msg: 'Erro ao atualizar status' });
+  }
+});
+
 
 //OS
 app.post('/os', async (req, res) => {
@@ -334,14 +312,10 @@ app.get('/os', async (req, res) => {
 });
 
 app.get('/os/quantidade', async (req, res) => {
-  try {
-    const dados = await database.getQuantidadeOrdensPorData();
-    res.json(dados);
-  } catch (err) {
-    console.error('Erro ao buscar quantidades de ordens:', err);
-    res.status(500).json({ error: 'Erro no servidor' });
-  }
+  const dados = await database.getQuantidadeOrdensPorData();
+  res.json(dados);
 });
+
 
 app.get('/os/quantidade-por-status', async (req, res) => {
   try {
@@ -370,32 +344,16 @@ app.get('/os/:id', async (req, res) => {
 });
 
 
-
-
 // ALERTAS
 app.get('/alertas', async (req, res) => {
   const alertas = await database.listAlertas();
   res.json(alertas);
 });
 
-
-
-
-
-
-
-
 app.post('/alertas', async (req, res) => {
   await database.createAlerta(req.body);
   res.status(201).send();
 });
-
-
-
-
-
-
-
 
 app.delete('/alertas/:id', async (req, res) => {
   await database.deleteAlerta(req.params.id);
@@ -404,14 +362,11 @@ app.delete('/alertas/:id', async (req, res) => {
 
 
 
-
-
 // RELATÓRIOS
 app.get('/relatorios', async (req, res) => {
   const relatorios = await database.listRelatorios();
   res.json(relatorios);
 });
-
 
 
 app.post('/relatorios', async (req, res) => {
@@ -423,15 +378,9 @@ app.post('/relatorios', async (req, res) => {
 app.post('/agendamentos', async (req, res) => {
   const { equipamento_id, data_agendada, status, responsavel, observacoes } = req.body;
 
-
-
-
   if (!equipamento_id || !data_agendada || !status || !responsavel) {
     return res.status(400).json({ msg: 'Preencha todos os campos obrigatórios!' });
   }
-
-
-
   try {
     await database.createAgendamento({ equipamento_id, data_agendada, status, responsavel, observacoes });
     res.status(201).json({ msg: 'Agendamento criado com sucesso!' });
@@ -452,6 +401,13 @@ app.get('/agendamentos', async (req, res) => {
     res.status(500).json({ msg: 'Erro interno ao buscar agendamentos.' });
   }
 });
+
+
+//Rotas para a analise 
+app.use('/prever-proxima', predicaoRouter);
+
+app.use('/analise', analiseRouter);
+
 
 
 //TESTES
@@ -491,6 +447,7 @@ cron.schedule('*/1 * * * *', () => {
 });
 
 
+
 //INDICADORES DA DASHBOARD
 app.get('/dashboard/indicadores', async (req, res) => {
   try {
@@ -512,6 +469,7 @@ app.get('/dashboard/indicadores', async (req, res) => {
     res.status(500).json({ erro: "Erro ao buscar indicadores" });
   }
 });
+
 
 
 
